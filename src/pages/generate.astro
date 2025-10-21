@@ -1,0 +1,11 @@
+---
+import Layout from "../layouts/Layout.astro";
+import GenerateView from "../components/generation/GenerateView";
+
+export const prerender = false;
+---
+
+<Layout title="Generowanie fiszek AI">
+  <GenerateView client:load />
+</Layout>
+
