@@ -1,6 +1,11 @@
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
-import type { CommitGenerationCommand, CommitGenerationResultDto, ApiErrorResponse, FlashcardDto } from "../../../../types";
+import type {
+  CommitGenerationCommand,
+  CommitGenerationResultDto,
+  ApiErrorResponse,
+  FlashcardDto,
+} from "../../../../types";
 import { z } from "zod";
 
 // Disable prerendering for this API endpoint
@@ -137,7 +142,10 @@ export const POST: APIRoute = async ({ locals, params, request }) => {
 
       // Find original proposal
       const proposedItems = generation.proposed_flashcards?.items || [];
-      const originalProposal = proposedItems.find((p: any) => (p.proposalId || p.id) === action.proposalId);
+      const originalProposal = proposedItems.find(
+        (p: { proposalId?: string; id?: string; front: string; back: string }) =>
+          (p.proposalId || p.id) === action.proposalId
+      );
 
       // Determine if edited
       const wasEdited = originalProposal
@@ -227,11 +235,6 @@ export const POST: APIRoute = async ({ locals, params, request }) => {
     });
   } catch (error) {
     console.error("Unexpected error in POST /api/ai-generations/:id/commit:", error);
-    return errorResponse(
-      500,
-      "INTERNAL_ERROR",
-      "An unexpected error occurred while committing flashcards"
-    );
+    return errorResponse(500, "INTERNAL_ERROR", "An unexpected error occurred while committing flashcards");
   }
 };
-

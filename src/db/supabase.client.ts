@@ -8,17 +8,21 @@ import type { Database } from "./database.types";
 // during module evaluation when env vars might be undefined in some
 // development scenarios.
 export function createSupabaseClient(): SupabaseClient {
-  const supabaseUrl = import.meta.env.SUPABASE_URL;
-  const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
+  const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error("Supabase environment variables are not set");
   }
 
+  const isBrowser = typeof window !== "undefined";
+
   return createClient<Database>(supabaseUrl, supabaseAnonKey, {
     auth: {
-      persistSession: false,
-      detectSessionInUrl: false,
+      persistSession: isBrowser,
+      detectSessionInUrl: isBrowser,
+      autoRefreshToken: isBrowser,
+      ...(isBrowser ? { storageKey: "10xdevs-auth-session" } : {}),
     },
   });
 }

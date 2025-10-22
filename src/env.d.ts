@@ -14,8 +14,8 @@ declare global {
 }
 
 interface ImportMetaEnv {
-  readonly SUPABASE_URL: string;
-  readonly SUPABASE_ANON_KEY: string;
+  readonly PUBLIC_SUPABASE_URL: string;
+  readonly PUBLIC_SUPABASE_ANON_KEY: string;
   // Additional API keys for AI features (can be removed if not using OpenRouter)
   readonly OPENROUTER_API_KEY: string;
   readonly OPENROUTER_ALLOWED_MODELS?: string;

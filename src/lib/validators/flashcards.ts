@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-import type { FlashcardSource } from "../../types";
-
 const MIN_TEXT_LENGTH = 10;
 const FRONT_MAX_LENGTH = 200;
 const BACK_MAX_LENGTH = 500;
@@ -35,6 +33,7 @@ export const createFlashcardSchema = z
             type: "string",
             message: "Front text must be at least 10 characters",
           });
+          return z.NEVER;
         }
         if (length > FRONT_MAX_LENGTH) {
           ctx.addIssue({
@@ -44,8 +43,6 @@ export const createFlashcardSchema = z
             type: "string",
             message: "Front text must not exceed 200 characters",
           });
-        }
-        if (ctx.issues.length > 0) {
           return z.NEVER;
         }
         return sanitized;
@@ -66,6 +63,7 @@ export const createFlashcardSchema = z
             type: "string",
             message: "Back text must be at least 10 characters",
           });
+          return z.NEVER;
         }
         if (length > BACK_MAX_LENGTH) {
           ctx.addIssue({
@@ -75,8 +73,6 @@ export const createFlashcardSchema = z
             type: "string",
             message: "Back text must not exceed 500 characters",
           });
-        }
-        if (ctx.issues.length > 0) {
           return z.NEVER;
         }
         return sanitized;

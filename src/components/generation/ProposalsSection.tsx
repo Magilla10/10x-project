@@ -36,9 +36,7 @@ export function ProposalsSection({
               <p className="text-sm font-medium">
                 Zaznaczono: {selection.selectedCount} / {proposals.length}
               </p>
-              <p className="text-xs text-muted-foreground">
-                Dostępne miejsca: {selection.remainingSlots}
-              </p>
+              <p className="text-xs text-muted-foreground">Dostępne miejsca: {selection.remainingSlots}</p>
             </div>
             <Button onClick={onCommit} disabled={!canCommit}>
               {isCommitting ? "Zapisywanie..." : "Zapisz zaznaczone"}
@@ -71,7 +69,6 @@ interface ProposalCardProps {
 function ProposalCard({ proposal, onToggleAccept, onEdit }: ProposalCardProps) {
   const frontLength = countCodePoints(proposal.frontDraft);
   const backLength = countCodePoints(proposal.backDraft);
-  const hasErrors = proposal.validation?.front || proposal.validation?.back;
 
   return (
     <Card className={cn(proposal.accepted && "border-green-500 bg-green-50 dark:bg-green-950/20")}>
@@ -93,8 +90,11 @@ function ProposalCard({ proposal, onToggleAccept, onEdit }: ProposalCardProps) {
       <CardContent className="space-y-4">
         {/* Front */}
         <div>
-          <label className="block text-sm font-medium mb-1">Przód fiszki</label>
+          <label htmlFor={`proposal-front-${proposal.proposalId}`} className="block text-sm font-medium mb-1">
+            Przód fiszki
+          </label>
           <textarea
+            id={`proposal-front-${proposal.proposalId}`}
             value={proposal.frontDraft}
             onChange={(e) => onEdit(proposal.proposalId, e.target.value, proposal.backDraft)}
             rows={2}
@@ -118,8 +118,11 @@ function ProposalCard({ proposal, onToggleAccept, onEdit }: ProposalCardProps) {
 
         {/* Back */}
         <div>
-          <label className="block text-sm font-medium mb-1">Tył fiszki</label>
+          <label htmlFor={`proposal-back-${proposal.proposalId}`} className="block text-sm font-medium mb-1">
+            Tył fiszki
+          </label>
           <textarea
+            id={`proposal-back-${proposal.proposalId}`}
             value={proposal.backDraft}
             onChange={(e) => onEdit(proposal.proposalId, proposal.frontDraft, e.target.value)}
             rows={4}
@@ -144,4 +147,3 @@ function ProposalCard({ proposal, onToggleAccept, onEdit }: ProposalCardProps) {
     </Card>
   );
 }
-

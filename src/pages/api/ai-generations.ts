@@ -128,7 +128,12 @@ export const POST: APIRoute = async ({ locals, request }) => {
           code: issue.code,
         }));
 
-        return errorResponse(422, "SCHEMA_VALIDATION_FAILED", "Input validation failed. Please check your request data.", issues);
+        return errorResponse(
+          422,
+          "SCHEMA_VALIDATION_FAILED",
+          "Input validation failed. Please check your request data.",
+          issues
+        );
       }
       throw error;
     }

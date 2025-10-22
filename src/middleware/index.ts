@@ -24,31 +24,34 @@ export const onRequest = defineMiddleware(async (context, next) => {
     try {
       console.debug("[middleware] sb-access-token present:", Boolean(accessToken));
       console.debug("[middleware] sb-refresh-token present:", Boolean(refreshToken));
-    } catch (err) {
+    } catch {
       // swallow logging errors
     }
   }
 
-  if (!accessToken || !refreshToken) {
-    return next();
+  if (accessToken && refreshToken) {
+    try {
+      const { data, error } = await supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
+
+      if (error) {
+        console.warn("Failed to restore Supabase session from cookies", error);
+      } else if (data?.user) {
+        context.locals.user = data.user;
+      }
+    } catch (err) {
+      console.warn("Error while restoring Supabase session:", err);
+    }
   }
 
-  try {
-    const { data, error } = await supabase.auth.setSession({
-      access_token: accessToken,
-      refresh_token: refreshToken,
-    });
+  // Protected routes: require authentication
+  const protectedRoutes = ["/generate"];
+  const isProtectedRoute = protectedRoutes.some((route) => context.url.pathname.startsWith(route));
 
-    if (error) {
-      console.warn("Failed to restore Supabase session from cookies", error);
-      return next();
-    }
-
-    if (data?.user) {
-      context.locals.user = data.user;
-    }
-  } catch (err) {
-    console.warn("Error while restoring Supabase session:", err);
+  if (isProtectedRoute && !context.locals.user) {
+    return context.redirect("/login");
   }
 
   return next();

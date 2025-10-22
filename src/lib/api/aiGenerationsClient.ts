@@ -17,9 +17,7 @@ import type {
  * POST /api/ai-generations
  * Create a new AI generation request
  */
-export async function postCreateGeneration(
-  payload: CreateGenerationCommand
-): Promise<CreateGenerationResponseDto> {
+export async function postCreateGeneration(payload: CreateGenerationCommand): Promise<CreateGenerationResponseDto> {
   const response = await fetch("/api/ai-generations", {
     method: "POST",
     headers: {
@@ -121,4 +119,3 @@ export class ApiError extends Error {
     this.name = "ApiError";
   }
 }
-

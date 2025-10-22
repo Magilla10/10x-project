@@ -10,8 +10,8 @@
 - Obsługa błędów: 409 (limity/duplikaty/stany równoległe), 413 (payload), 422 (walidacja), 401 (redirect), 404 (not found). Toast dla 5xx.
 - A11y: etykiety/aria dla pól, focus management w Dialog/AlertDialog, klawiszologia dla krytycznych akcji.
 - Trasy: `/login`, `/signup`, `/`, `/generate`, `/generations`, `/generations/:id`, `/study`, `/settings`.
- - Modele AI (Select): opcje pochodzą z whitelisty `OPENROUTER_ALLOWED_MODELS` (env) lub domyślnej listy w validatorze.
- - Limit payload dla POST `/api/ai-generations`: 10 KB → 413 (czytelny komunikat w UI).
+- Modele AI (Select): opcje pochodzą z whitelisty `OPENROUTER_ALLOWED_MODELS` (env) lub domyślnej listy w validatorze.
+- Limit payload dla POST `/api/ai-generations`: 10 KB → 413 (czytelny komunikat w UI).
 
 ## 2. Lista widoków
 
@@ -74,12 +74,12 @@
 ## 3. Mapa podróży użytkownika
 
 - Ścieżka główna (AI → nauka):
-  1) `/signup` → sukces → `/`
-  2) Z nagłówka → „Generuj” → `/generate`
-  3) Wklejenie tekstu → „Generuj” → pending (≤5 s) → propozycje
-  4) Przejrzyj/Edytuj/Odrzuć → „Zapisz zaakceptowane” (commit)
-  5) Redirect/CTA do `/` → weryfikacja zapisanych fiszek (licznik „x/15”)
-  6) „Rozpocznij naukę” → `/study` → reveal → ocena → następna fiszka
+  1. `/signup` → sukces → `/`
+  2. Z nagłówka → „Generuj” → `/generate`
+  3. Wklejenie tekstu → „Generuj” → pending (≤5 s) → propozycje
+  4. Przejrzyj/Edytuj/Odrzuć → „Zapisz zaakceptowane” (commit)
+  5. Redirect/CTA do `/` → weryfikacja zapisanych fiszek (licznik „x/15”)
+  6. „Rozpocznij naukę” → `/study` → reveal → ocena → następna fiszka
 
 - Ścieżka manualna: `/` → Dodaj fiszkę → Edytuj/Usuń w miejscu.
 
@@ -124,5 +124,3 @@
 - Nauka: StudyCard (front/back, reveal), StudyActions (again/hard/good/easy), ProgressBar, SessionSummary.
 - Ustawienia: ProfileForm (displayName, timeZone, marketingOptIn), DeleteAccountSection.
 - Integracja danych: query hooks (np. `useFlashcards`, `useGenerations`, `useGeneration`, `useStudySession`, `useMe`) z kluczami i invalidacjami zgodnie z przepływami.
-
-

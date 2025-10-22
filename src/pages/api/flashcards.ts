@@ -1,8 +1,6 @@
 import type { APIRoute } from "astro";
 import { ZodError } from "zod";
-import { createClient } from "@supabase/supabase-js";
 
-import type { Database } from "../../db/database.types";
 import type { ApiErrorResponse, CreateFlashcardCommand } from "../../types";
 import { createFlashcard, FlashcardsServiceError } from "../../lib/services/flashcardsService";
 import { validateCreateFlashcardCommand } from "../../lib/validators/flashcards";
@@ -82,4 +80,3 @@ export const POST: APIRoute = async ({ locals, request }) => {
     return errorResponse(500, "INTERNAL_ERROR", "An unexpected error occurred");
   }
 };
-

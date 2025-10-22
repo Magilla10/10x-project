@@ -25,8 +25,7 @@ export function ManualFlashcardForm({ remainingSlots, onCreated }: ManualFlashca
   const frontLength = countCodePoints(front);
   const backLength = countCodePoints(back);
 
-  const canSubmit =
-    frontValidation.isValid && backValidation.isValid && !isSubmitting && remainingSlots > 0;
+  const canSubmit = frontValidation.isValid && backValidation.isValid && !isSubmitting && remainingSlots > 0;
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
@@ -70,8 +69,11 @@ export function ManualFlashcardForm({ remainingSlots, onCreated }: ManualFlashca
       <CardContent className="space-y-4">
         {/* Front */}
         <div>
-          <label className="block text-sm font-medium mb-2">Przód fiszki (pytanie)</label>
+          <label htmlFor="manual-flashcard-front" className="block text-sm font-medium mb-2">
+            Przód fiszki (pytanie)
+          </label>
           <textarea
+            id="manual-flashcard-front"
             value={front}
             onChange={(e) => setFront(e.target.value)}
             rows={2}
@@ -98,8 +100,11 @@ export function ManualFlashcardForm({ remainingSlots, onCreated }: ManualFlashca
 
         {/* Back */}
         <div>
-          <label className="block text-sm font-medium mb-2">Tył fiszki (odpowiedź)</label>
+          <label htmlFor="manual-flashcard-back" className="block text-sm font-medium mb-2">
+            Tył fiszki (odpowiedź)
+          </label>
           <textarea
+            id="manual-flashcard-back"
             value={back}
             onChange={(e) => setBack(e.target.value)}
             rows={4}
@@ -155,4 +160,3 @@ export function ManualFlashcardForm({ remainingSlots, onCreated }: ManualFlashca
     </Card>
   );
 }
-

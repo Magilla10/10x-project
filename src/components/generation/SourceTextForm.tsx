@@ -3,10 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { GenerationFormState } from "@/lib/viewModels/generationView";
-import {
-  validateSourceText,
-  countCodePoints,
-} from "@/lib/utils/validation";
+import { validateSourceText, countCodePoints } from "@/lib/utils/validation";
 
 interface SourceTextFormProps {
   value: GenerationFormState;
@@ -14,13 +11,6 @@ interface SourceTextFormProps {
   onSubmit: () => void;
   isSubmitting: boolean;
 }
-
-const ALLOWED_MODELS = [
-  "openrouter/anthropic/claude-3.5-sonnet",
-  "openrouter/openai/gpt-4o",
-  "openrouter/openai/gpt-4o-mini",
-  "openrouter/google/gemini-pro-1.5",
-] as const;
 
 /**
  * Form for inputting source text and generation parameters
@@ -79,7 +69,12 @@ export function SourceTextForm({ value, onChange, onSubmit, isSubmitting }: Sour
             ) : (
               <p className="text-muted-foreground">Wymagane: 1000-10000 znaków</p>
             )}
-            <p className={cn("font-mono", currentLength >= 1000 && currentLength <= 10000 ? "text-green-600" : "text-muted-foreground")}>
+            <p
+              className={cn(
+                "font-mono",
+                currentLength >= 1000 && currentLength <= 10000 ? "text-green-600" : "text-muted-foreground"
+              )}
+            >
               {currentLength} / 10000
             </p>
           </div>
@@ -112,4 +107,3 @@ export function SourceTextForm({ value, onChange, onSubmit, isSubmitting }: Sour
     </Card>
   );
 }
-

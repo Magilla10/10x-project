@@ -67,7 +67,7 @@ export const GET: APIRoute = async ({ locals, params }) => {
     // 4. Build response DTO
     const proposedFlashcards = data.proposed_flashcards?.items || [];
     const maxFlashcards = data.proposed_flashcards?.maxFlashcards || 10;
-    
+
     const expiresAt = new Date(new Date(data.created_at).getTime() + 5 * 60 * 1000).toISOString();
 
     const response: GenerationDetailDto = {
@@ -82,12 +82,14 @@ export const GET: APIRoute = async ({ locals, params }) => {
       temperature: data.temperature,
       durationMs: data.duration_ms,
       errorMessage: data.error_message,
-      proposedFlashcards: proposedFlashcards.map((item: any) => ({
-        proposalId: item.proposalId || item.id,
-        front: item.front,
-        back: item.back,
-        source: "ai-full" as const,
-      })),
+      proposedFlashcards: proposedFlashcards.map(
+        (item: { proposalId?: string; id?: string; front: string; back: string }) => ({
+          proposalId: item.proposalId || item.id || "",
+          front: item.front,
+          back: item.back,
+          source: "ai-full" as const,
+        })
+      ),
       metrics: {
         generatedCount: data.generated_count,
         acceptedCount: data.accepted_count,
@@ -108,11 +110,6 @@ export const GET: APIRoute = async ({ locals, params }) => {
     });
   } catch (error) {
     console.error("Unexpected error in GET /api/ai-generations/:id:", error);
-    return errorResponse(
-      500,
-      "INTERNAL_ERROR",
-      "An unexpected error occurred while fetching generation details"
-    );
+    return errorResponse(500, "INTERNAL_ERROR", "An unexpected error occurred while fetching generation details");
   }
 };
-

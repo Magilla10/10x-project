@@ -53,4 +53,3 @@ export function GenerationStatusPanel({ status, progress, error, onRetry }: Gene
 
   return null;
 }
-

@@ -9,14 +9,14 @@ import type { AiGenerationStatus } from "../../types";
  * Extended status for UI flow
  * Maps API statuses and adds UI-specific states
  */
-export type GenerationStatus = 
-  | "idle"           // Initial state, no generation started
-  | "submitting"     // Form is being submitted
-  | "pending"        // Generation is processing (API: pending)
-  | "ready"          // Generation completed successfully (API: succeeded)
-  | "failed"         // Generation failed (API: failed)
-  | "committing"     // Committing selected flashcards
-  | "committed";     // Successfully committed
+export type GenerationStatus =
+  | "idle" // Initial state, no generation started
+  | "submitting" // Form is being submitted
+  | "pending" // Generation is processing (API: pending)
+  | "ready" // Generation completed successfully (API: succeeded)
+  | "failed" // Generation failed (API: failed)
+  | "committing" // Committing selected flashcards
+  | "committed"; // Successfully committed
 
 /**
  * Maps API status to UI status
@@ -57,8 +57,8 @@ export interface GenerationFormState {
  * Progress tracking for visual feedback
  */
 export interface GenerationProgressState {
-  startedAt?: number;    // timestamp in ms
-  deadlineAt?: number;   // startedAt + 5000ms
+  startedAt?: number; // timestamp in ms
+  deadlineAt?: number; // startedAt + 5000ms
 }
 
 /**
@@ -72,7 +72,7 @@ export interface EditableProposedFlashcard {
   frontDraft: string;
   backDraft: string;
   accepted: boolean;
-  edited: boolean;  // Derived: true if draft differs from original
+  edited: boolean; // Derived: true if draft differs from original
   validation?: {
     front?: string;
     back?: string;
@@ -84,7 +84,7 @@ export interface EditableProposedFlashcard {
  */
 export interface CommitSelectionState {
   selectedCount: number;
-  remainingSlots: number;  // 15 - currentUserFlashcards
+  remainingSlots: number; // 15 - currentUserFlashcards
 }
 
 /**
@@ -107,4 +107,3 @@ export interface GenerateViewState {
   proposals: EditableProposedFlashcard[];
   selection: CommitSelectionState;
 }
-

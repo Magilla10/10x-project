@@ -17,7 +17,6 @@ export default function GenerateView() {
     error,
     proposals,
     selection,
-    generationId,
     startGeneration,
     toggleAccept,
     editProposal,
@@ -101,4 +100,3 @@ export default function GenerateView() {
     </div>
   );
 }
-

@@ -144,4 +144,3 @@ export function validateCreateGenerationCommand(data: unknown): CreateGeneration
 export function safeValidateCreateGenerationCommand(data: unknown) {
   return createGenerationSchema.safeParse(data);
 }
-

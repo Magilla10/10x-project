@@ -16,21 +16,21 @@ export function countCodePoints(text: string): number {
  */
 export function validateSourceText(text: string): ValidationResult {
   const length = countCodePoints(text.trim());
-  
+
   if (length < 1000) {
     return {
       isValid: false,
       error: `Tekst musi mieć co najmniej 1000 znaków (obecnie: ${length})`,
     };
   }
-  
+
   if (length > 10000) {
     return {
       isValid: false,
       error: `Tekst nie może przekraczać 10000 znaków (obecnie: ${length})`,
     };
   }
-  
+
   return { isValid: true };
 }
 
@@ -39,21 +39,21 @@ export function validateSourceText(text: string): ValidationResult {
  */
 export function validateFlashcardFront(text: string): ValidationResult {
   const length = countCodePoints(text.trim());
-  
+
   if (length < 10) {
     return {
       isValid: false,
       error: `Przód fiszki musi mieć co najmniej 10 znaków (obecnie: ${length})`,
     };
   }
-  
+
   if (length > 200) {
     return {
       isValid: false,
       error: `Przód fiszki nie może przekraczać 200 znaków (obecnie: ${length})`,
     };
   }
-  
+
   return { isValid: true };
 }
 
@@ -62,21 +62,21 @@ export function validateFlashcardFront(text: string): ValidationResult {
  */
 export function validateFlashcardBack(text: string): ValidationResult {
   const length = countCodePoints(text.trim());
-  
+
   if (length < 10) {
     return {
       isValid: false,
       error: `Tył fiszki musi mieć co najmniej 10 znaków (obecnie: ${length})`,
     };
   }
-  
+
   if (length > 500) {
     return {
       isValid: false,
       error: `Tył fiszki nie może przekraczać 500 znaków (obecnie: ${length})`,
     };
   }
-  
+
   return { isValid: true };
 }
 
@@ -87,14 +87,14 @@ export function validateModel(model: string | undefined, allowedModels: readonly
   if (!model) {
     return { isValid: true }; // Optional field
   }
-  
+
   if (!allowedModels.includes(model)) {
     return {
       isValid: false,
       error: `Model musi być jednym z dozwolonych: ${allowedModels.join(", ")}`,
     };
   }
-  
+
   return { isValid: true };
 }
 
@@ -105,14 +105,14 @@ export function validateTemperature(temperature: number | undefined): Validation
   if (temperature === undefined) {
     return { isValid: true }; // Optional field
   }
-  
+
   if (temperature < 0.0 || temperature > 2.0) {
     return {
       isValid: false,
       error: "Temperature musi być w zakresie 0.0-2.0",
     };
   }
-  
+
   const decimalPlaces = temperature.toString().split(".")[1]?.length || 0;
   if (decimalPlaces > 2) {
     return {
@@ -120,7 +120,7 @@ export function validateTemperature(temperature: number | undefined): Validation
       error: "Temperature może mieć maksymalnie 2 miejsca po przecinku",
     };
   }
-  
+
   return { isValid: true };
 }
 
@@ -134,7 +134,7 @@ export function validateMaxFlashcards(maxFlashcards: number): ValidationResult {
       error: "Liczba fiszek musi być w zakresie 1-15",
     };
   }
-  
+
   return { isValid: true };
 }
 
@@ -147,4 +147,3 @@ export function mightExceedPayloadSize(sourceText: string): boolean {
   const estimatedSize = sourceText.length * 1.2 + 500; // 20% overhead + 500 bytes metadata
   return estimatedSize > 10 * 1024; // 10KB
 }
-

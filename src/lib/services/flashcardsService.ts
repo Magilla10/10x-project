@@ -1,9 +1,5 @@
 import type { SupabaseClient } from "../../db/supabase.client";
-import type {
-  CreateFlashcardCommand,
-  CreateFlashcardResponseDto,
-  FlashcardDto,
-} from "../../types";
+import type { CreateFlashcardCommand, CreateFlashcardResponseDto, FlashcardDto } from "../../types";
 
 interface ServiceContext {
   supabase: SupabaseClient;
@@ -71,11 +67,7 @@ export async function createFlashcard(
     }
 
     if (error.code === "23505") {
-      throw new FlashcardsServiceError(
-        "A flashcard with the same front already exists.",
-        "FLASHCARD_DUPLICATE",
-        409
-      );
+      throw new FlashcardsServiceError("A flashcard with the same front already exists.", "FLASHCARD_DUPLICATE", 409);
     }
 
     throw new FlashcardsServiceError("Failed to create flashcard", "DB_WRITE_FAILED", 500, error);
@@ -83,4 +75,3 @@ export async function createFlashcard(
 
   return mapRowToDto(data);
 }
-

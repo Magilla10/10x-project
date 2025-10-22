@@ -1,4 +1,5 @@
 1. Lista tabel z kolumnami, typami danych i ograniczeniami
+
 - **Typy pomocnicze**
   - `app.flashcard_source` ENUM(`manual`, `ai-full`, `ai-edited`).
   - `app.ai_generation_status` ENUM(`pending`, `success`, `failed`).
@@ -6,12 +7,12 @@
 
 This table is managed by Supabase Auth.
 
-  - `user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE`
-  - `display_name varchar(120)`
-  - `time_zone varchar(64)`
-  - `marketing_opt_in boolean NOT NULL DEFAULT false`
-  - `created_at timestamptz NOT NULL DEFAULT timezone('utc', now())`
-  - `updated_at timestamptz NOT NULL DEFAULT timezone('utc', now())`
+- `user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE`
+- `display_name varchar(120)`
+- `time_zone varchar(64)`
+- `marketing_opt_in boolean NOT NULL DEFAULT false`
+- `created_at timestamptz NOT NULL DEFAULT timezone('utc', now())`
+- `updated_at timestamptz NOT NULL DEFAULT timezone('utc', now())`
 - **app.flashcards**
   - `id uuid PRIMARY KEY DEFAULT gen_random_uuid()`
   - `user_id uuid NOT NULL REFERENCES app.profiles(user_id) ON DELETE CASCADE`
@@ -58,6 +59,7 @@ This table is managed by Supabase Auth.
   - `created_at timestamptz NOT NULL DEFAULT timezone('utc', now())`
 
 2. Relacje między tabelami
+
 - `auth.users (1) ──── (1) app.profiles` poprzez `app.profiles.user_id` (klucz główny/obcy).
 - `app.profiles (1) ──── (N) app.flashcards` poprzez `app.flashcards.user_id`.
 - `app.profiles (1) ──── (N) app.ai_generation_logs` poprzez `app.ai_generation_logs.user_id`.
@@ -66,6 +68,7 @@ This table is managed by Supabase Auth.
 - `app.ai_generation_logs (1) ──── (N) app.ai_generation_error_logs` (opcjonalna) poprzez `app.ai_generation_error_logs.ai_generation_log_id`.
 
 3. Indeksy
+
 - `CREATE INDEX app_flashcards_user_id_idx ON app.flashcards(user_id);`
 - `CREATE INDEX app_flashcards_origin_generation_id_idx ON app.flashcards(origin_generation_id);`
 - `CREATE INDEX app_flashcards_source_idx ON app.flashcards(source);`
@@ -75,6 +78,7 @@ This table is managed by Supabase Auth.
 - `CREATE INDEX app_ai_generation_error_logs_user_id_created_at_idx ON app.ai_generation_error_logs(user_id, created_at DESC);`
 
 4. Zasady PostgreSQL (RLS)
+
 - `ALTER TABLE app.profiles ENABLE ROW LEVEL SECURITY;`
   - `CREATE POLICY profiles_select_own ON app.profiles FOR SELECT USING (user_id = auth.uid());`
   - `CREATE POLICY profiles_update_own ON app.profiles FOR UPDATE USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());`
@@ -89,10 +93,10 @@ This table is managed by Supabase Auth.
   - `CREATE POLICY ai_generation_error_logs_delete_service_role ON app.ai_generation_error_logs FOR DELETE USING (auth.role() = 'service_role');`
 
 5. Dodatkowe uwagi
+
 - Wymagana jest aktywacja rozszerzenia `pgcrypto` dla `gen_random_uuid()` oraz utworzenie schematu `app` (`CREATE SCHEMA app;`).
 - Dla spójności znaczników czasu zastosować wyzwalacz `app.set_updated_at()` aktualizujący `updated_at` przy każdej modyfikacji w tabelach `app.profiles`, `app.flashcards`, `app.ai_generation_logs`.
 - Limit 15 fiszek na użytkownika egzekwować funkcją `app.enforce_flashcard_limit()` oraz wyzwalaczem `app.flashcards_before_insert_limit` BEFORE INSERT na tabeli `app.flashcards` (odrzucając insert, gdy użytkownik posiada ≥15 aktywnych fiszek).
 - Rozważyć funkcję `app.log_ai_generation()` zapisywaną po zakończeniu generowania, aby wypełnić pola `status`, `accepted_count`, `rejected_count`, `duration_ms` oraz `error_message` (w przypadku błędu), co wspiera metryki KPI.
 - Funkcja `app.log_ai_generation()` powinna dodatkowo aktualizować pola `generated_count`, `accepted_unedited_count`, `accepted_edited_count`, `source_text_hash` oraz `source_text_length`, co umożliwia spójne raportowanie KPI i weryfikację duplikatów źródłowych tekstów.
 - Dodać wyzwalacz `app.ai_generation_error_logs_before_insert_hash_validate` walidujący zgodność `source_text_length` z oczekiwaniami oraz obliczający hash, jeżeli wpis pochodzi z automatyzacji backendu.
-

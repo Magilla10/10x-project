@@ -1,9 +1,11 @@
 # Plan implementacji widoku Generowanie fiszek (AI)
 
 ## 1. Przegląd
+
 Widok służy do wklejenia dłuższego tekstu (1000–10000 znaków), uruchomienia generowania propozycji fiszek przez AI, a następnie przeglądu oraz akceptacji/edycji/odrzucania propozycji. Użytkownik może też utworzyć pojedynczą fiszkę manualnie (US-004). Czas generacji musi być nieodczuwalny – do 5 sekund. Interfejs zapewnia jasne walidacje inline, wskaźniki postępu i ograniczenia (limit 15 fiszek na użytkownika). Widok umożliwia użytkownikowi wprowadzenie tekstu i wysłanie go do API w celu wygenerowania propozycji fiszek przez AI. Następnie użytkownik może przeglądać, zatwierdzać, edytować lub odrzucać wygenerowane propozycje fiszek. Na koniec może zapisać do bazy danych wszystkie bądź tylko zaakceptowane fiszki.
 
 ## 2. Routing widoku
+
 - Ścieżka: `/generate`
 - Plik strony: `src/pages/generate.astro`
 - Główny komponent (React island): `src/components/generation/GenerateView.tsx`
@@ -11,6 +13,7 @@ Widok służy do wklejenia dłuższego tekstu (1000–10000 znaków), uruchomien
 Widok powinien być dostępny pod ścieżką `/generate`.
 
 ## 3. Struktura komponentów
+
 - GenerateView (root, equivalent to FlashcardGenerationView)
   - SourceTextForm (equivalent to TextInputArea)
     - TextareaWithCounter
@@ -37,7 +40,9 @@ Widok powinien być dostępny pod ścieżką `/generate`.
   - **ErrorNotification** – komponent do wyświetlania komunikatów o błędach (integrated in GenerationStatusPanel).
 
 ## 4. Szczegóły komponentów
+
 ### GenerateView (FlashcardGenerationView)
+
 - Opis: Orkiestracja przepływu: formularz źródła, status generacji, lista propozycji, toolbar zbiorczy, formularz manualny. Główny widok, który integruje wszystkie komponenty niezbędne do generowania i przeglądania fiszek.
 - Główne elementy: układ strony, nagłówek, sekcje formularzy i wyników, komunikaty o limitach. Pole tekstowe, przycisk generowania, lista fiszek, loader i komunikaty o błędach.
 - Obsługiwane interakcje: inicjacja generowania, polling wyników, akceptacja/odrzucanie/edycja, zbiorczy commit, tworzenie manualnej fiszki. Zmiana wartości w polu tekstowym, kliknięcie przycisku generowania, interakcje z kartami fiszek (zatwierdzenie, edycja, odrzucenie), kliknięcie przycisku zapisu.
@@ -46,6 +51,7 @@ Widok powinien być dostępny pod ścieżką `/generate`.
 - Propsy: brak (root). Może otrzymywać ewentualne funkcje callback dla potwierdzenia zapisu lub przekierowania po zapisaniu.
 
 ### SourceTextForm (TextInputArea)
+
 - Opis: Formularz wejściowy do uruchomienia generowania. Komponent umożliwiający wprowadzenie tekstu przez użytkownika.
 - Główne elementy: `textarea` z licznikiem, `select` modelu (whitelist), `input[type=number]` dla temperature (0.0–2.0; krok 0.01), przycisk „Generuj”. Pole tekstowe (textarea) z placeholderem i etykietą.
 - Obsługiwane interakcje: wpisywanie tekstu, wybór modelu, wprowadzanie temperature, submit. onChange do aktualizacji stanu wartości tekstu.
@@ -55,16 +61,17 @@ Widok powinien być dostępny pod ścieżką `/generate`.
   - `temperature`: 0.0–2.0, max 2 miejsca po przecinku.
   - `maxFlashcards`: 1–15.
   - Prewencja 413: ostrzeż, gdy rozmiar JSON może przekroczyć 10 KB (heurystyka), ale ostatecznie polegaj na odpowiedzi 413.
-  Sprawdzenie długości tekstu (1000 - 10000 znaków) na bieżąco.
+    Sprawdzenie długości tekstu (1000 - 10000 znaków) na bieżąco.
 - Typy: `GenerationFormState`, `CreateGenerationCommand` (z `src/types.ts`). Lokalny string state, typ `CreateGenerationCommand` przy wysyłce.
 - Propsy:
   - `value: GenerationFormState`
   - `onChange(next: GenerationFormState)`
   - `onSubmit()`
   - `isSubmitting: boolean`
-  value, onChange, placeholder.
+    value, onChange, placeholder.
 
 ### GenerationStatusPanel (SkeletonLoader and ErrorNotification)
+
 - Opis: Pokazuje status „pending” (spinner/skeleton), ETA i licznik od uruchomienia, do 5 s. Informuje o błędach. Komponent wizualizacji ładowania danych (skeleton) i wyświetlania komunikatów o błędach.
 - Główne elementy: spinner, pasek postępu, komunikaty. Szablon UI (skeleton) imitujący strukturę kart, które będą wyświetlone; komunikat tekstowy, ikona błędu.
 - Obsługiwane interakcje: anulowanie (opcjonalne), retrial (opcjonalne) po błędzie. Brak interakcji użytkownika dla loadera.
@@ -73,6 +80,7 @@ Widok powinien być dostępny pod ścieżką `/generate`.
 - Propsy: `status: GenerationStatus`, `progress: GenerationProgressState`, `error?: UiError`. Może przyjmować opcjonalne parametry stylizacyjne dla loadera; message, ewentualnie typ błędu dla notification.
 
 ### ProposalsSection (FlashcardList)
+
 - Opis: Sekcja wyników z listą propozycji i narzędziami zbiorczymi. Komponent wyświetlający listę propozycji fiszek otrzymanych z API.
 - Główne elementy: toolbar (licznik wybranych, przycisk „Zapisz zaakceptowane”, selekcja wszystkich/żadnych), lista kart. Lista (np. ul/li lub komponenty grid) zawierająca wiele ProposalCard.
 - Obsługiwane interakcje: wybór/odznaczenie wszystkich, zapis zbiorczy. Przekazywanie zdarzeń do poszczególnych kart (akceptacja, edycja, odrzucenie).
@@ -81,6 +89,7 @@ Widok powinien być dostępny pod ścieżką `/generate`.
 - Propsy: `items`, `onToggleAll`, `onBulkSave`, `selectedCount`, `remainingSlots`. flashcards (lista propozycji), onAccept, onEdit, onReject.
 
 ### ProposalsList
+
 - Opis: Renderuje listę `ProposalCard` w układzie siatki lub listy.
 - Główne elementy: kontener, wirtualizacja (opcjonalnie – zwykle ≤15).
 - Interakcje: przekazywane do kart.
@@ -89,17 +98,19 @@ Widok powinien być dostępny pod ścieżką `/generate`.
 - Propsy: `items`, `onItemChange`, `onItemAcceptToggle`, `onItemReject`, `onOpenEditor`.
 
 ### ProposalCard (FlashcardListItem)
+
 - Opis: Pojedyncza propozycja – front/back z licznikami, przełącznik Akceptuj/Odrzuć, edycja inline lub otwarcie `EditProposalDialog`. Pojedyncza karta przedstawiająca jedną propozycję fiszki.
 - Główne elementy: `Card` (shadcn/ui), pola `textarea`, liczniki znaków, przyciski Akceptuj/Odrzuć/Edytuj. Wyświetlenie tekstu dla przodu i tyłu fiszki oraz trzy przyciski: "Zatwierdź", "Edytuj", "Odrzuć".
 - Obsługiwane interakcje: toggle akceptacji, edycja, odrzucenie. onClick dla każdego przycisku, który modyfikuje stan danej fiszki (np. oznaczenie jako zaakceptowana, otwarcie trybu edycji, usunięcie z listy).
 - Walidacja:
   - `front` ≤200, `back` ≤500, minimalnie 10 znaków (spójne z endpointem manualnym, a przy commicie – walidacja po stronie UI identyczna).
   - Gdy treść zmieniona względem propozycji, oznacz `source` jako `ai-edited`, w przeciwnym razie `ai-full`.
-  Jeśli edycja jest aktywna, wprowadzone dane muszą spełniać warunki: front ≤ 200 znaków, back ≤ 500 znaków.
+    Jeśli edycja jest aktywna, wprowadzone dane muszą spełniać warunki: front ≤ 200 znaków, back ≤ 500 znaków.
 - Typy: `EditableProposedFlashcard`. Rozszerzony typ `EditableProposedFlashcard`, lokalny model stanu, np. z flagą accepted/edited.
 - Propsy: `item`, `onChange(item)`, `onAcceptToggle(id, accepted)`, `onReject(id)`, `onOpenEditor(id)`. flashcard (dane propozycji), onAccept, onEdit, onReject.
 
 ### EditProposalDialog (opcjonalnie)
+
 - Opis: Modal do wygodnej edycji front/back z licznikami i walidacją.
 - Główne elementy: `Dialog` (shadcn/ui), dwa `textarea`, liczniki, zapisz/anuluj.
 - Interakcje: edycja i potwierdzenie zapisów w draftach karty.
@@ -108,6 +119,7 @@ Widok powinien być dostępny pod ścieżką `/generate`.
 - Propsy: `open`, `item`, `onClose()`, `onSave(next)`.
 
 ### ProposalsToolbar (BulkSaveButton)
+
 - Opis: Działania zbiorcze nad propozycjami. Komponent zawiera przyciski umożliwiające zbiorczy zapis wszystkich wygenerowanych fiszek lub tylko tych, które zostały zaakceptowane.
 - Główne elementy: licznik wybranych, przyciski „Zaznacz wszystko/wyczyść”, „Zapisz zaakceptowane”. Dwa przyciski: "Zapisz wszystkie" oraz "Zapisz zaakceptowane".
 - Interakcje: selekcja wszystkich, commit. onClick dla każdego przycisku, który wywołuje odpowiednią funkcję wysyłającą żądanie do API.
@@ -116,6 +128,7 @@ Widok powinien być dostępny pod ścieżką `/generate`.
 - Propsy: `selectedCount`, `total`, `remainingSlots`, `onSelectAll()`, `onClear()`, `onCommit()`. onSaveAll, onSaveAccepted, disabled.
 
 ### ManualFlashcardForm (US-004)
+
 - Opis: Prosty formularz dodania pojedynczej fiszki ręcznie.
 - Główne elementy: dwa `textarea` z licznikami, przycisk „Dodaj fiszkę”.
 - Interakcje: walidacja inline, submit do `/api/flashcards`.
@@ -124,6 +137,7 @@ Widok powinien być dostępny pod ścieżką `/generate`.
 - Propsy: `onCreated(flashcard)`, `remainingSlots`.
 
 ## 5. Typy
+
 Nowe typy ViewModel oraz interfejsy propów (wycinek – najważniejsze):
 
 ```ts
@@ -156,9 +170,9 @@ export interface EditableProposedFlashcard {
   frontOriginal: string;
   backOriginal: string;
   frontDraft: string; // edytowalne
-  backDraft: string;  // edytowalne
-  accepted: boolean;  // do zbiorczego commit
-  edited: boolean;    // pochodna (front/back różni się od original)
+  backDraft: string; // edytowalne
+  accepted: boolean; // do zbiorczego commit
+  edited: boolean; // pochodna (front/back różni się od original)
   validation?: {
     front?: string; // komunikat błędu
     back?: string;
@@ -173,6 +187,7 @@ export interface CommitSelectionState {
 ```
 
 Powiązania z istniejącymi DTO (`src/types.ts`):
+
 - Start: `CreateGenerationCommand`, `CreateGenerationResponseDto.generation` (zawiera `id`, `status: pending`, `sourceTextLength`, `maxFlashcards`, `createdAt`, `expiresAt`).
 - Polling: oczekiwany `GenerationDetailDto` (z `proposedFlashcards: ProposedFlashcardDto[]`, `status`, `durationMs`, `metrics`).
 - Commit: `CommitGenerationCommand` (lista `GenerationCommitAction`), odpowiedź `CommitGenerationResultDto` (z `accepted: FlashcardDto[]`, `summary`, `metrics`).
@@ -188,6 +203,7 @@ Powiązania z istniejącymi DTO (`src/types.ts`):
 - Statusy API vs FE: API `AiGenerationStatus` zwraca `pending | succeeded | failed`; na FE `GenerationStatus` używa `ready` jako odpowiednika `succeeded`.
 
 ## 6. Zarządzanie stanem
+
 - Główny stan w `GenerateView` + dedykowany hook `useAiGeneration` w `src/lib/hooks/useAiGeneration.ts`.
 - `useAiGeneration` – odpowiedzialności:
   - `startGeneration(form: GenerationFormState)`: POST `/api/ai-generations`, ustaw `status=submitting` → po 202 `pending` i uruchom polling.
@@ -201,14 +217,16 @@ Powiązania z istniejącymi DTO (`src/types.ts`):
 - Lokalny stan formularza manualnego niezależny.
 
 Stan widoku będzie zarządzany za pomocą hooków React (useState, useEffect). Kluczowe stany:
+
 - Wartość pola tekstowego (sourceText w GenerationFormState).
 - Stan ładowania (isLoading) dla wywołania API i pollingu.
 - Stan błędów (errorMessage) dla komunikatów o błędach.
 - Lista propozycji fiszek (EditableProposedFlashcard[]), wraz z ich lokalnymi flagami (np. accepted, edited).
 - Opcjonalny stan dla trybu edycji fiszki.
-Koniecznie wydzielić logikę API do customowego hooka (np. useAiGeneration) do obsługi logiki API.
+  Koniecznie wydzielić logikę API do customowego hooka (np. useAiGeneration) do obsługi logiki API.
 
 ## 7. Integracja API
+
 - Ścieżki (Astro):
   - Start generowania: `POST /api/ai-generations` – body: `CreateGenerationCommand`.
     - Zwrot: 202 z `{ generation: GenerationSummaryDto }`.
@@ -221,21 +239,37 @@ Koniecznie wydzielić logikę API do customowego hooka (np. useAiGeneration) do 
   - Zwrot: 201 z `{ flashcard: CreateFlashcardResponseDto }`; Błędy: 401/422 (code: `VALIDATION_ERROR`)/409 (`FLASHCARD_DUPLICATE`, `FLASHCARD_LIMIT_REACHED`)/500.
 
 - Klient HTTP (FE): `src/lib/api/aiGenerationsClient.ts`:
+
 ```ts
-export async function postCreateGeneration(payload: CreateGenerationCommand): Promise<CreateGenerationResponseDto> { /* fetch('/api/ai-generations') */ }
-export async function getGenerationDetail(id: string): Promise<GenerationDetailDto> { /* fetch(`/api/ai-generations/${id}`) */ }
-export async function postCommitGeneration(id: string, cmd: CommitGenerationCommand): Promise<CommitGenerationResultDto> { /* fetch */ }
-export async function postCreateManualFlashcard(cmd: CreateFlashcardCommand): Promise<{ flashcard: CreateFlashcardResponseDto }> { /* fetch('/api/flashcards') */ }
+export async function postCreateGeneration(payload: CreateGenerationCommand): Promise<CreateGenerationResponseDto> {
+  /* fetch('/api/ai-generations') */
+}
+export async function getGenerationDetail(id: string): Promise<GenerationDetailDto> {
+  /* fetch(`/api/ai-generations/${id}`) */
+}
+export async function postCommitGeneration(
+  id: string,
+  cmd: CommitGenerationCommand
+): Promise<CommitGenerationResultDto> {
+  /* fetch */
+}
+export async function postCreateManualFlashcard(
+  cmd: CreateFlashcardCommand
+): Promise<{ flashcard: CreateFlashcardResponseDto }> {
+  /* fetch('/api/flashcards') */
+}
 ```
 
 Integracja z endpointem:
+
 - **POST /api/ai-generations**: Wysyłamy obiekt `CreateGenerationCommand` { sourceText, model, temperature, maxFlashcards } i otrzymujemy odpowiedź zawierającą generation id, status pending itp. (adapted from course's POST /generations).
 - **GET /api/ai-generations/:id**: Polling dla szczegółów generacji z propozycjami.
 - **POST /api/ai-generations/:id/commit**: Po zaznaczeniu fiszek do zapisu, wysyłamy żądanie z `CommitGenerationCommand`, który zawiera tablicę akcji fiszek (każda fiszka musi mieć front ≤200 znaków, back ≤500 znaków, odpowiedni source) i umożliwia zapisanie danych do bazy (adapted from course's POST /flashcards).
- - **POST /api/ai-generations/:id/commit**: Po zaznaczeniu fiszek do zapisu, wysyłamy żądanie z `CommitGenerationCommand`, który zawiera tablicę akcji typu `GenerationCommitAction` (dla zaakceptowanych: `action: "accept"`, `proposalId`, `front`, `back`; opcjonalnie dla odrzuconych: `action: "reject"`). Backend rozstrzyga finalne `source` na podstawie treści.
+- **POST /api/ai-generations/:id/commit**: Po zaznaczeniu fiszek do zapisu, wysyłamy żądanie z `CommitGenerationCommand`, który zawiera tablicę akcji typu `GenerationCommitAction` (dla zaakceptowanych: `action: "accept"`, `proposalId`, `front`, `back`; opcjonalnie dla odrzuconych: `action: "reject"`). Backend rozstrzyga finalne `source` na podstawie treści.
 - Walidacja odpowiedzi: sprawdzenie statusu HTTP, obsługa błędów 400 (walidacja) oraz 500 (błąd serwera).
 
 ## 8. Interakcje użytkownika
+
 - Wklejenie tekstu → licznik znaków pokazuje „X / 10000”, validacja od 1000.
 - Wybranie modelu i temperature (opcjonalne) → walidacja zakresu i precyzji (2 miejsca).
 - Klik „Generuj” → status „pending”, spinner i pasek postępu (do 5 s). Blokada formularza w trakcie.
@@ -257,6 +291,7 @@ Integracja z endpointem:
 - Komponent `ProposalsToolbar` umożliwi wysłanie wybranych fiszek do zapisania w bazie (wywołanie API POST /api/ai-generations/:id/commit).
 
 ## 9. Warunki i walidacja
+
 - Formularz generowania:
   - `sourceText` (po sanitizacji): 1000–10000 code pointów; usuń znaki kontrolne; znormalizuj białe znaki (analogicznie do backendu).
   - `model`: jeden z: `openrouter/anthropic/claude-3.5-sonnet`, `openrouter/openai/gpt-4o`, `openrouter/openai/gpt-4o-mini`, `openrouter/google/gemini-pro-1.5` (zgodnie z backendowym defaultem; finalnie można pobrać z env/API).
@@ -274,6 +309,7 @@ Integracja z endpointem:
 - Walidacja odpowiedzi API: komunikaty błędów wyświetlane w ErrorNotification.
 
 ## 10. Obsługa błędów
+
 - 401 UNAUTHORIZED: pokaż baner „Zaloguj się, aby generować fiszki” + CTA do logowania.
 - 400 INVALID_CONTENT_TYPE/INVALID_JSON: nie powinno wystąpić przy naszym fetch – ogólny komunikat.
 - 413 PAYLOAD_TOO_LARGE: komunikat „Żądanie przekracza 10 KB – skróć tekst lub podziel na części”.
@@ -289,6 +325,7 @@ Integracja z endpointem:
 - W przypadku niepowodzenia zapisu fiszek, stan ładowania jest resetowany, a użytkownik informowany o błędzie.
 
 ## 11. Kroki implementacji
+
 1. Utworzenie nowej strony widoku `/generate` w strukturze Astro.
 2. Implementacja głównego komponentu `GenerateView`.
 3. Stworzenie komponentu `SourceTextForm` z walidacją długości tekstu.
@@ -303,7 +340,9 @@ Integracja z endpointem:
 12. Finalny code review i refaktoryzacja przed wdrożeniem.
 
 ---
+
 Uwagi implementacyjne:
+
 - Endpointy polling/commit są zakładane po stronie backendu (typy już istnieją w `src/types.ts`). FE powinien użyć tych typów i przygotować się na ich dostępność pod `/api/ai-generations/:id` oraz `/api/ai-generations/:id/commit`.
 - Limit 15: backend już wymusza wstawianie i zgłasza 409; FE powinien uprzedzać i komunikować, a przy commicie – ograniczać wybór do `remainingSlots`.
 - Różnicowanie `ai-full`/`ai-edited` realizujemy na FE tylko do celów UI; ostateczny zapis i metryki będą naliczane w backendzie na podstawie treści i oryginału.

@@ -21,12 +21,12 @@ The AI Flashcard Generator addresses the time-consuming nature of manually creat
 
 ## Tech Stack
 
-| Category          | Technology                                                                                                  |
-| ----------------- | ----------------------------------------------------------------------------------------------------------- |
-| **Frontend**      | [Astro 5](https://astro.build/), [React 19](https://react.dev/), [TypeScript 5](https://www.typescriptlang.org/), [Tailwind CSS 4](https://tailwindcss.com/), [Shadcn/ui](https://ui.shadcn.com/) |
-| **Backend**       | [Supabase](https://supabase.io/) (PostgreSQL, Authentication, BaaS)                                         |
-| **AI Services**   | [OpenRouter.ai](https://openrouter.ai/)                                                                     |
-| **CI/CD & Hosting** | [GitHub Actions](https://github.com/features/actions), [DigitalOcean](https://www.digitalocean.com/) (Docker) |
+| Category            | Technology                                                                                                                                                                                        |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend**        | [Astro 5](https://astro.build/), [React 19](https://react.dev/), [TypeScript 5](https://www.typescriptlang.org/), [Tailwind CSS 4](https://tailwindcss.com/), [Shadcn/ui](https://ui.shadcn.com/) |
+| **Backend**         | [Supabase](https://supabase.io/) (PostgreSQL, Authentication, BaaS)                                                                                                                               |
+| **AI Services**     | [OpenRouter.ai](https://openrouter.ai/)                                                                                                                                                           |
+| **CI/CD & Hosting** | [GitHub Actions](https://github.com/features/actions), [DigitalOcean](https://www.digitalocean.com/) (Docker)                                                                                     |
 
 ## Getting Started Locally
 
@@ -40,6 +40,7 @@ To set up and run the project on your local machine, follow these steps.
 ### Installation
 
 1.  **Clone the repository:**
+
     ```bash
     git clone https://github.com/your-username/ai-flashcard-generator.git
     cd ai-flashcard-generator
@@ -47,19 +48,28 @@ To set up and run the project on your local machine, follow these steps.
 
 2.  **Set up environment variables:**
     Create a `.env` file in the root of the project and add your Supabase and OpenRouter API keys.
+
     ```env
     PUBLIC_SUPABASE_URL="your-supabase-url"
     PUBLIC_SUPABASE_ANON_KEY="your-supabase-anon-key"
     OPENROUTER_API_KEY="your-openrouter-api-key"
     ```
 
+    **OpenRouter Configuration:**
+    - Get your API key from [OpenRouter Keys](https://openrouter.ai/keys)
+    - The `OPENROUTER_API_KEY` is required for AI-powered flashcard generation
+    - Optional: Set `OPENROUTER_BASE_URL` to override the default endpoint (default: `https://openrouter.ai/api`)
+    - Optional: Set `APP_URL` for proper request attribution (default: `http://localhost:4321`)
+
 3.  **Switch to the correct Node.js version:**
     If you are using `nvm`, run the following command:
+
     ```bash
     nvm use
     ```
 
 4.  **Install dependencies:**
+
     ```bash
     npm install
     ```
@@ -88,12 +98,58 @@ When introducing changes to the project, always follow the directory structure b
 ```md
 .
 ├── src/
-│   ├── layouts/    # Astro layouts
-│   ├── pages/      # Astro pages
-│   │   └── api/    # API endpoints
-│   ├── components/ # UI components (Astro & React)
-│   └── assets/     # Static assets
-├── public/         # Public assets
+│ ├── layouts/ # Astro layouts
+│ ├── pages/ # Astro pages
+│ │ └── api/ # API endpoints
+│ ├── components/ # UI components (Astro & React)
+│ │ └── ui/ # Shadcn/ui components
+│ ├── lib/ # Services and utilities
+│ │ ├── services/ # Business logic services
+│ │ ├── api/ # API client functions
+│ │ ├── hooks/ # React hooks
+│ │ ├── validators/ # Zod validation schemas
+│ │ └── utils/ # Utility functions
+│ ├── db/ # Database clients and types
+│ ├── middleware/ # Astro middleware
+│ ├── types.ts # Shared TypeScript types
+│ └── assets/ # Static assets
+├── public/ # Public assets
+└── supabase/ # Supabase migrations and config
+```
+
+### Key Services
+
+**OpenRouter Service** (`src/lib/services/openrouter.service.ts`)
+
+The OpenRouter service provides a robust integration with OpenRouter API for AI-powered chat completions:
+
+- **Structured Communication**: Support for system and user messages with role-based conversation flow
+- **JSON Schema Validation**: Enforces structured responses with Zod schema validation
+- **Error Handling**: Comprehensive error handling with custom error classes for different failure scenarios
+- **Automatic Retries**: Exponential backoff for transient errors (network issues, rate limits)
+- **Type Safety**: Full TypeScript support with generic response types
+- **Security**: Secure API key management via environment variables
+
+**Example Usage:**
+
+```typescript
+import { OpenRouterService } from '@/lib/services/openrouter.service';
+
+const service = new OpenRouterService({
+  apiKey: import.meta.env.OPENROUTER_API_KEY,
+  defaultModel: 'gpt-3.5-turbo',
+  defaultParameters: { temperature: 0.7 }
+});
+
+const response = await service.sendChatCompletion([
+  { role: 'system', content: 'You are a helpful assistant' },
+  { role: 'user', content: 'Generate flashcards from this text...' }
+], {
+  response_format: {
+    type: 'json_schema',
+    json_schema: { name: 'FlashcardSchema', strict: true, schema: {...} }
+  }
+});
 ```
 
 ## Project Scope

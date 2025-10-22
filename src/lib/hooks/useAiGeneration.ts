@@ -9,12 +9,7 @@ import type {
 } from "../viewModels/generationView";
 import { mapApiStatusToUiStatus } from "../viewModels/generationView";
 import type { ProposedFlashcardDto, GenerationCommitAction } from "../../types";
-import {
-  postCreateGeneration,
-  getGenerationDetail,
-  postCommitGeneration,
-  ApiError,
-} from "../api/aiGenerationsClient";
+import { postCreateGeneration, getGenerationDetail, postCommitGeneration, ApiError } from "../api/aiGenerationsClient";
 import { validateFlashcardFront, validateFlashcardBack } from "../utils/validation";
 
 const POLLING_INTERVAL = 800; // ms
@@ -40,58 +35,102 @@ export function useAiGeneration() {
   /**
    * Convert API proposals to editable view models
    */
-  const mapProposalsToEditable = useCallback((apiProposals: readonly ProposedFlashcardDto[]): EditableProposedFlashcard[] => {
-    return apiProposals.map((p) => ({
-      proposalId: p.proposalId,
-      frontOriginal: p.front,
-      backOriginal: p.back,
-      frontDraft: p.front,
-      backDraft: p.back,
-      accepted: false,
-      edited: false,
-    }));
-  }, []);
+  const mapProposalsToEditable = useCallback(
+    (apiProposals: readonly ProposedFlashcardDto[]): EditableProposedFlashcard[] => {
+      return apiProposals.map((p) => ({
+        proposalId: p.proposalId,
+        frontOriginal: p.front,
+        backOriginal: p.back,
+        frontDraft: p.front,
+        backDraft: p.back,
+        accepted: false,
+        edited: false,
+      }));
+    },
+    []
+  );
 
   /**
    * Start polling for generation result
    */
-  const startPolling = useCallback((id: string) => {
-    const startedAt = Date.now();
-    const deadlineAt = startedAt + POLLING_TIMEOUT;
+  const startPolling = useCallback(
+    (id: string) => {
+      const startedAt = Date.now();
+      const deadlineAt = startedAt + POLLING_TIMEOUT;
 
-    setProgress({ startedAt, deadlineAt });
+      setProgress({ startedAt, deadlineAt });
 
-    pollingIntervalRef.current = setInterval(async () => {
-      if (Date.now() > deadlineAt) {
-        clearInterval(pollingIntervalRef.current);
-        setStatus("failed");
-        setError({
-          code: "POLLING_TIMEOUT",
-          message: "Generowanie trwa zbyt długo. Spróbuj ponownie później.",
-        });
-        return;
-      }
-
-      try {
-        const detail = await getGenerationDetail(id);
-        const uiStatus = mapApiStatusToUiStatus(detail.status);
-
-        if (uiStatus === "ready") {
-          clearInterval(pollingIntervalRef.current);
-          setStatus("ready");
-          setProposals(mapProposalsToEditable(detail.proposedFlashcards));
-          setSelection((prev) => ({ ...prev, selectedCount: 0 }));
-        } else if (uiStatus === "failed") {
+      pollingIntervalRef.current = setInterval(async () => {
+        if (Date.now() > deadlineAt) {
           clearInterval(pollingIntervalRef.current);
           setStatus("failed");
           setError({
-            code: "GENERATION_FAILED",
-            message: detail.errorMessage || "Generowanie nie powiodło się",
+            code: "POLLING_TIMEOUT",
+            message: "Generowanie trwa zbyt długo. Spróbuj ponownie później.",
           });
+          return;
         }
-        // else still pending, keep polling
+
+        try {
+          const detail = await getGenerationDetail(id);
+          const uiStatus = mapApiStatusToUiStatus(detail.status);
+
+          if (uiStatus === "ready") {
+            clearInterval(pollingIntervalRef.current);
+            setStatus("ready");
+            setProposals(mapProposalsToEditable(detail.proposedFlashcards));
+            setSelection((prev) => ({ ...prev, selectedCount: 0 }));
+          } else if (uiStatus === "failed") {
+            clearInterval(pollingIntervalRef.current);
+            setStatus("failed");
+            setError({
+              code: "GENERATION_FAILED",
+              message: detail.errorMessage || "Generowanie nie powiodło się",
+            });
+          }
+          // else still pending, keep polling
+        } catch (err) {
+          clearInterval(pollingIntervalRef.current);
+          setStatus("failed");
+          if (err instanceof ApiError) {
+            setError({
+              code: err.code,
+              message: err.message,
+              details: err.details,
+            });
+          } else {
+            setError({
+              code: "UNKNOWN_ERROR",
+              message: "Wystąpił nieoczekiwany błąd",
+            });
+          }
+        }
+      }, POLLING_INTERVAL);
+    },
+    [mapProposalsToEditable]
+  );
+
+  /**
+   * Start generation
+   */
+  const startGeneration = useCallback(
+    async (form: GenerationFormState) => {
+      setStatus("submitting");
+      setError(undefined);
+      setProposals([]);
+
+      try {
+        const response = await postCreateGeneration({
+          sourceText: form.sourceText,
+          maxFlashcards: form.maxFlashcards,
+          model: form.model,
+          temperature: form.temperature,
+        });
+
+        setGenerationId(response.generation.id);
+        setStatus("pending");
+        startPolling(response.generation.id);
       } catch (err) {
-        clearInterval(pollingIntervalRef.current);
         setStatus("failed");
         if (err instanceof ApiError) {
           setError({
@@ -102,57 +141,20 @@ export function useAiGeneration() {
         } else {
           setError({
             code: "UNKNOWN_ERROR",
-            message: "Wystąpił nieoczekiwany błąd",
+            message: "Nie udało się rozpocząć generowania",
           });
         }
       }
-    }, POLLING_INTERVAL);
-  }, [mapProposalsToEditable]);
-
-  /**
-   * Start generation
-   */
-  const startGeneration = useCallback(async (form: GenerationFormState) => {
-    setStatus("submitting");
-    setError(undefined);
-    setProposals([]);
-
-    try {
-      const response = await postCreateGeneration({
-        sourceText: form.sourceText,
-        maxFlashcards: form.maxFlashcards,
-        model: form.model,
-        temperature: form.temperature,
-      });
-
-      setGenerationId(response.generation.id);
-      setStatus("pending");
-      startPolling(response.generation.id);
-    } catch (err) {
-      setStatus("failed");
-      if (err instanceof ApiError) {
-        setError({
-          code: err.code,
-          message: err.message,
-          details: err.details,
-        });
-      } else {
-        setError({
-          code: "UNKNOWN_ERROR",
-          message: "Nie udało się rozpocząć generowania",
-        });
-      }
-    }
-  }, [startPolling]);
+    },
+    [startPolling]
+  );
 
   /**
    * Toggle proposal acceptance
    */
   const toggleAccept = useCallback((proposalId: string) => {
     setProposals((prev) => {
-      const updated = prev.map((p) =>
-        p.proposalId === proposalId ? { ...p, accepted: !p.accepted } : p
-      );
+      const updated = prev.map((p) => (p.proposalId === proposalId ? { ...p, accepted: !p.accepted } : p));
       const acceptedCount = updated.filter((p) => p.accepted).length;
       setSelection((s) => ({ ...s, selectedCount: acceptedCount }));
       return updated;
@@ -253,4 +255,3 @@ export function useAiGeneration() {
     reset,
   };
 }
-
