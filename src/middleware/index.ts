@@ -47,7 +47,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   // Protected routes: require authentication
-  const protectedRoutes = ["/generate"];
+  const protectedRoutes = ["/generate", "/flashcards"];
   const isProtectedRoute = protectedRoutes.some((route) => context.url.pathname.startsWith(route));
 
   if (isProtectedRoute && !context.locals.user) {

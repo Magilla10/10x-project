@@ -3,14 +3,14 @@ import AuthLayout from "../layouts/AuthLayout.astro";
 import { LoginForm } from "@/components/auth/LoginForm";
 ---
 
-<AuthLayout title="Witaj ponownie" subtitle="Zaloguj się, aby kontynuować pracę z fiszkami">
+<AuthLayout title="Witaj ponownie" subtitle="Zaloguj się, aby kontynuować pracę z fiszkami" hideAuthButtons>
   <section class="grid w-full gap-8 lg:grid-cols-[1.2fr_1fr]">
-    <article class="hidden flex-col justify-center gap-6 rounded-3xl border bg-white/60 p-10 text-slate-900 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-white/5 dark:text-white lg:flex">
+    <article class="hidden flex-col justify-center gap-6 rounded-3xl border border-white/10 bg-white/10 p-10 text-white shadow-lg backdrop-blur-xl lg:flex">
       <h2 class="text-3xl font-semibold tracking-tight">Twoja wiedza w jednym miejscu</h2>
-      <p class="text-base leading-relaxed text-slate-700/90 dark:text-slate-200/80">
+      <p class="text-base leading-relaxed text-white/80">
         Generuj fiszki z notatek, artykułów i wykładów. Dzięki personalizowanym pakietom ucz się szybciej i skuteczniej.
       </p>
-      <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-300/90">
+      <ul class="space-y-3 text-sm text-white/70">
         <li class="flex items-center gap-2">
           <span class="size-2 rounded-full bg-indigo-500" aria-hidden="true" />
           Chronione dane i dostęp tylko dla Ciebie.

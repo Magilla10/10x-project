@@ -4,31 +4,32 @@ import { RegisterForm } from "@/components/auth/RegisterForm";
 ---
 
 <AuthLayout
-  title="Dołącz do 10xDevs"
+  title="Rejestracja do Flashcards"
   subtitle="Załóż konto i zacznij generować fiszki dopasowane do Twojego stylu nauki"
+  hideAuthButtons
 >
   <section class="grid w-full gap-8 xl:grid-cols-[1.5fr_1fr]">
     <div class="flex w-full justify-center">
       <RegisterForm client:load className="w-full" />
     </div>
 
-    <aside class="hidden flex-col gap-6 rounded-3xl border bg-white/70 p-10 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-white/10 xl:flex">
+    <aside class="hidden flex-col gap-6 rounded-3xl border border-white/10 bg-white/10 p-10 shadow-xl backdrop-blur-xl xl:flex">
       <div class="space-y-4">
-        <h2 class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">Dlaczego warto?</h2>
-        <p class="text-base leading-relaxed text-slate-700/90 dark:text-slate-200/80">
+        <h2 class="text-2xl font-semibold tracking-tight text-white">Dlaczego warto?</h2>
+        <p class="text-base leading-relaxed text-white/80">
           10xDevs to inteligentny generator fiszek, który pomaga usystematyzować materiał i przygotować się do egzaminów.
         </p>
       </div>
       <div class="grid gap-5">
-        <div class="rounded-2xl border border-indigo-200/60 bg-indigo-500/10 p-6 text-indigo-900 shadow-sm dark:border-indigo-400/30 dark:bg-indigo-500/20 dark:text-indigo-100">
+        <div class="rounded-2xl border border-indigo-400/30 bg-indigo-500/20 p-6 text-indigo-100 shadow-sm">
           <h3 class="text-lg font-semibold">Personalizacja</h3>
-          <p class="text-sm text-indigo-900/80 dark:text-indigo-100/80">
+          <p class="text-sm text-indigo-100/80">
             Ustawiaj limity fiszek i decyduj, jakie fragmenty materiału chcesz powtórzyć w pierwszej kolejności.
           </p>
         </div>
-        <div class="rounded-2xl border border-slate-200/60 bg-white/80 p-6 text-slate-900 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/40 dark:text-slate-100">
+        <div class="rounded-2xl border border-white/20 bg-white/10 p-6 text-white shadow-sm">
           <h3 class="text-lg font-semibold">Kontrola nad postępem</h3>
-          <p class="text-sm text-slate-700/80 dark:text-slate-200/80">
+          <p class="text-sm text-white/70">
             Śledź historię generacji, zapisuj ulubione fiszki i wracaj do nich, kiedy tylko potrzebujesz.
           </p>
         </div>

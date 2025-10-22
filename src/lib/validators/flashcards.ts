@@ -106,3 +106,95 @@ export function validateCreateFlashcardCommand(data: unknown): CreateFlashcardIn
 export function safeValidateCreateFlashcardCommand(data: unknown) {
   return createFlashcardSchema.safeParse(data);
 }
+
+export const updateFlashcardSchema = z
+  .object({
+    front: z
+      .string({ invalid_type_error: "front must be a string" })
+      .transform((value, ctx) => {
+        const sanitized = sanitizeText(value);
+        const length = countCodePoints(sanitized);
+        if (length < MIN_TEXT_LENGTH) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.too_small,
+            minimum: MIN_TEXT_LENGTH,
+            inclusive: true,
+            type: "string",
+            message: "Front text must be at least 10 characters",
+          });
+          return z.NEVER;
+        }
+        if (length > FRONT_MAX_LENGTH) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.too_big,
+            maximum: FRONT_MAX_LENGTH,
+            inclusive: true,
+            type: "string",
+            message: "Front text must not exceed 200 characters",
+          });
+          return z.NEVER;
+        }
+        return sanitized;
+      })
+      .optional(),
+    back: z
+      .string({ invalid_type_error: "back must be a string" })
+      .transform((value, ctx) => {
+        const sanitized = sanitizeText(value);
+        const length = countCodePoints(sanitized);
+        if (length < MIN_TEXT_LENGTH) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.too_small,
+            minimum: MIN_TEXT_LENGTH,
+            inclusive: true,
+            type: "string",
+            message: "Back text must be at least 10 characters",
+          });
+          return z.NEVER;
+        }
+        if (length > BACK_MAX_LENGTH) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.too_big,
+            maximum: BACK_MAX_LENGTH,
+            inclusive: true,
+            type: "string",
+            message: "Back text must not exceed 500 characters",
+          });
+          return z.NEVER;
+        }
+        return sanitized;
+      })
+      .optional(),
+    source: z.enum(["manual", "ai-full", "ai-edited"]).optional(),
+    originGenerationId: z.string().uuid().nullish(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.source === "manual" && value.originGenerationId) {
+      ctx.addIssue({
+        path: ["originGenerationId"],
+        code: z.ZodIssueCode.custom,
+        message: "originGenerationId should not be provided for manual flashcards",
+      });
+    }
+
+    if (value.source && value.source !== "manual" && !value.originGenerationId) {
+      ctx.addIssue({
+        path: ["originGenerationId"],
+        code: z.ZodIssueCode.custom,
+        message: "originGenerationId is required when source is AI-generated",
+      });
+    }
+
+    if (!value.front && !value.back && value.source === undefined && value.originGenerationId === undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "At least one field is required to update a flashcard",
+      });
+    }
+  });
+
+export type UpdateFlashcardInput = z.infer<typeof updateFlashcardSchema>;
+
+export function validateUpdateFlashcardCommand(data: unknown): UpdateFlashcardInput {
+  return updateFlashcardSchema.parse(data);
+}

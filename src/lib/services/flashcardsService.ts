@@ -1,5 +1,10 @@
 import type { SupabaseClient } from "../../db/supabase.client";
-import type { CreateFlashcardCommand, CreateFlashcardResponseDto, FlashcardDto } from "../../types";
+import type {
+  CreateFlashcardCommand,
+  CreateFlashcardResponseDto,
+  FlashcardDto,
+  UpdateFlashcardCommand,
+} from "../../types";
 
 interface ServiceContext {
   supabase: SupabaseClient;
@@ -74,4 +79,95 @@ export async function createFlashcard(
   }
 
   return mapRowToDto(data);
+}
+
+export async function listFlashcards(context: ServiceContext): Promise<FlashcardDto[]> {
+  const { supabase, userId } = context;
+
+  const { data, error } = await supabase
+    .from("flashcards")
+    .select("id, front, back, source, origin_generation_id, created_at, updated_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new FlashcardsServiceError("Failed to load flashcards", "DB_READ_FAILED", 500, error);
+  }
+
+  return (data ?? []).map(mapRowToDto);
+}
+
+export async function updateFlashcard(
+  id: string,
+  command: UpdateFlashcardCommand,
+  context: ServiceContext
+): Promise<FlashcardDto> {
+  const { supabase, userId } = context;
+
+  const updates: Record<string, unknown> = {};
+
+  if (command.front !== undefined) {
+    updates.front = command.front;
+  }
+
+  if (command.back !== undefined) {
+    updates.back = command.back;
+  }
+
+  if (command.source !== undefined) {
+    updates.source = command.source;
+  }
+
+  if (command.originGenerationId !== undefined) {
+    updates.origin_generation_id = command.originGenerationId;
+  }
+
+  if (Object.keys(updates).length === 0) {
+    throw new FlashcardsServiceError(
+      "At least one field must be provided to update a flashcard",
+      "FLASHCARD_UPDATE_EMPTY",
+      400
+    );
+  }
+
+  const { data, error } = await supabase
+    .from("flashcards")
+    .update(updates)
+    .eq("user_id", userId)
+    .eq("id", id)
+    .select("id, front, back, source, origin_generation_id, created_at, updated_at")
+    .maybeSingle();
+
+  if (error) {
+    if (error.code === "23505") {
+      throw new FlashcardsServiceError("A flashcard with the same front already exists.", "FLASHCARD_DUPLICATE", 409);
+    }
+
+    throw new FlashcardsServiceError("Failed to update flashcard", "DB_WRITE_FAILED", 500, error);
+  }
+
+  if (!data) {
+    throw new FlashcardsServiceError("Flashcard not found", "FLASHCARD_NOT_FOUND", 404);
+  }
+
+  return mapRowToDto(data);
+}
+
+export async function deleteFlashcard(id: string, context: ServiceContext): Promise<void> {
+  const { supabase, userId } = context;
+
+  const { data, error } = await supabase
+    .from("flashcards")
+    .delete()
+    .eq("user_id", userId)
+    .eq("id", id)
+    .select("id");
+
+  if (error) {
+    throw new FlashcardsServiceError("Failed to delete flashcard", "DB_WRITE_FAILED", 500, error);
+  }
+
+  if (!data || data.length === 0) {
+    throw new FlashcardsServiceError("Flashcard not found", "FLASHCARD_NOT_FOUND", 404);
+  }
 }

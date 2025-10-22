@@ -6,6 +6,8 @@ import type {
   CommitGenerationResultDto,
   CreateFlashcardCommand,
   CreateFlashcardResponseDto,
+  FlashcardDto,
+  UpdateFlashcardCommand,
   ApiErrorResponse,
 } from "../../types";
 
@@ -103,6 +105,71 @@ export async function postCreateManualFlashcard(
   }
 
   return response.json();
+}
+
+/**
+ * GET /api/flashcards
+ * List flashcards for current user
+ */
+export async function getFlashcards(): Promise<{ flashcards: FlashcardDto[] }> {
+  const response = await fetch("/api/flashcards", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "same-origin",
+  });
+
+  if (!response.ok) {
+    const errorData = (await response.json()) as ApiErrorResponse;
+    throw new ApiError(response.status, errorData.error.code, errorData.error.message, errorData.error.details);
+  }
+
+  return response.json();
+}
+
+/**
+ * PATCH /api/flashcards/:id
+ * Update flashcard
+ */
+export async function patchFlashcard(
+  id: string,
+  command: UpdateFlashcardCommand
+): Promise<{ flashcard: FlashcardDto }> {
+  const response = await fetch(`/api/flashcards/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(command),
+    credentials: "same-origin",
+  });
+
+  if (!response.ok) {
+    const errorData = (await response.json()) as ApiErrorResponse;
+    throw new ApiError(response.status, errorData.error.code, errorData.error.message, errorData.error.details);
+  }
+
+  return response.json();
+}
+
+/**
+ * DELETE /api/flashcards/:id
+ * Delete flashcard
+ */
+export async function deleteFlashcardRequest(id: string): Promise<void> {
+  const response = await fetch(`/api/flashcards/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "same-origin",
+  });
+
+  if (!response.ok) {
+    const errorData = (await response.json()) as ApiErrorResponse;
+    throw new ApiError(response.status, errorData.error.code, errorData.error.message, errorData.error.details);
+  }
 }
 
 /**

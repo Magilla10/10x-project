@@ -118,3 +118,18 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .flashcard-flip {
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .flashcard-flip.flipped {
+    transform: scale(0.95);
+  }
+}
+
+img[src*="SuperFiszek.png"] {
+  max-width: 600px;
+  height: auto;
+}

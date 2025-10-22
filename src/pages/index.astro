@@ -1,8 +1,10 @@
 ---
 import Welcome from "../components/Welcome.astro";
 import Layout from "../layouts/Layout.astro";
+
+const isLoggedIn = Boolean(Astro.locals.user);
 ---
 
-<Layout>
-  <Welcome />
+<Layout hideAuthButtons={ !isLoggedIn }>
+  <Welcome isLoggedIn={isLoggedIn} />
 </Layout>

@@ -150,9 +150,12 @@ export function ManualFlashcardForm({ remainingSlots, onCreated }: ManualFlashca
           </div>
         )}
 
-        {/* Submit */}
-        <div className="flex justify-end">
-          <Button onClick={handleSubmit} disabled={!canSubmit}>
+        {/* Navigation & Submit */}
+        <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:items-center sm:justify-between">
+          <Button variant="link" asChild className="px-0 text-primary sm:order-1 sm:px-0">
+            <a href="/flashcards">Przejdź do moich fiszek</a>
+          </Button>
+          <Button onClick={handleSubmit} disabled={!canSubmit} className="sm:order-2">
             {isSubmitting ? "Dodawanie..." : "Dodaj fiszkę"}
           </Button>
         </div>

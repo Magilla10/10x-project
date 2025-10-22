@@ -32,7 +32,18 @@ export const requestPayloadSchema = z.object({
     .array(
       z.object({
         role: z.enum(["system", "user", "assistant"]),
-        content: z.string().min(1),
+        content: z.union([
+          z.string().min(1),
+          z.array(
+            z.object({
+              type: z.enum(["text", "image_url"]),
+              text: z.string().optional(),
+              image_url: z.object({
+                url: z.string().url(),
+              }).optional(),
+            })
+          ),
+        ]),
       })
     )
     .min(1, "At least one message is required"),
@@ -91,11 +102,22 @@ export const apiResponseSchema = z.object({
 export type ChatRole = "system" | "user" | "assistant";
 
 /**
+ * Content block for messages with images
+ */
+export interface ContentBlock {
+  type: "text" | "image_url";
+  text?: string;
+  image_url?: {
+    url: string;
+  };
+}
+
+/**
  * Single chat message
  */
 export interface ChatMessage {
   role: ChatRole;
-  content: string;
+  content: string | ContentBlock[];
 }
 
 /**
@@ -333,7 +355,7 @@ export class OpenRouterService {
 
     // Set default values
     this.baseUrl = options.baseUrl || "https://openrouter.ai/api";
-    this.defaultModel = options.defaultModel || "gpt-3.5-turbo";
+    this.defaultModel = options.defaultModel || "openai/gpt-4o";
     this.defaultParameters = options.defaultParameters || {};
     this.currentModel = this.defaultModel;
     this.currentParameters = { ...this.defaultParameters };
