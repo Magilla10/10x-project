@@ -131,5 +131,3 @@ Dla każdego:
 12. Monitorowanie produkcji: logowanie błędów, alerty dla nieudanych wywołań i limitów.
 
 ---
-
-_Przewodnik przygotowany dla technologii Astro 5, TypeScript 5, React 19, Tailwind 4, Shadcn/ui oraz Supabase._

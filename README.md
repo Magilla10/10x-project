@@ -26,6 +26,7 @@ The AI Flashcard Generator addresses the time-consuming nature of manually creat
 | **Frontend**        | [Astro 5](https://astro.build/), [React 19](https://react.dev/), [TypeScript 5](https://www.typescriptlang.org/), [Tailwind CSS 4](https://tailwindcss.com/), [Shadcn/ui](https://ui.shadcn.com/) |
 | **Backend**         | [Supabase](https://supabase.io/) (PostgreSQL, Authentication, BaaS)                                                                                                                               |
 | **AI Services**     | [OpenRouter.ai](https://openrouter.ai/)                                                                                                                                                           |
+| **Testing**         | [Vitest](https://vitest.dev/) (Unit & Integration), [React Testing Library](https://testing-library.com/react), [Playwright](https://playwright.dev/) (E2E), [MSW](https://mswjs.io/) (API Mocking) |
 | **CI/CD & Hosting** | [GitHub Actions](https://github.com/features/actions), [DigitalOcean](https://www.digitalocean.com/) (Docker)                                                                                     |
 
 ## Getting Started Locally
@@ -90,6 +91,7 @@ The following scripts are available in the `package.json`:
 - `npm run lint`: Lints the codebase for errors.
 - `npm run lint:fix`: Lints the codebase and automatically fixes issues.
 - `npm run format`: Formats the code using Prettier.
+- `npm run test`: Runs unit and integration tests using Vitest.
 
 ## Project Structure
 
@@ -152,6 +154,25 @@ const response = await service.sendChatCompletion([
 });
 ```
 
+## Testing Strategy
+
+The project implements a comprehensive testing strategy following the test pyramid approach to ensure reliability and maintainability.
+
+### Unit & Integration Tests
+
+**Vitest** serves as the primary test runner for unit and integration tests, providing a fast and Jest-compatible testing environment:
+
+- **React Testing Library**: Tests React components by simulating user interactions without testing implementation details
+
+### End-to-End Tests
+
+**Playwright** provides browser automation for comprehensive E2E testing:
+
+- Tests complete user workflows from authentication to flashcard generation
+- Validates cross-browser compatibility (Chrome, Firefox, Safari)
+
+For detailed testing scenarios and acceptance criteria, see `.ai/quality/test-plan.md`.
+
 ## Project Scope
 
 ### In Scope (MVP Features)
@@ -161,14 +182,6 @@ const response = await service.sendChatCompletion([
 - **User Authentication**: Secure user registration and login to ensure data isolation.
 - **Spaced Repetition System**: A basic algorithm to help schedule study sessions.
 - **Account Deletion**: Ability for users to permanently delete their account and all associated data.
-
-### Out of Scope
-
-- Advanced spaced repetition algorithms (e.g., SM-2).
-- Importing from file formats like PDF or DOCX.
-- Sharing flashcard decks between users.
-- Mobile applications (the MVP is web-only).
-- Advanced organizational features like tags or categories.
 
 ## AI Development Support
 
@@ -185,10 +198,6 @@ This project is configured with AI development tools to enhance the development 
 
 The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
 
-### GitHub Copilot
-
-AI instructions for GitHub Copilot are available in `.github/copilot-instructions.md`.
-
 ### Windsurf
 
 The `.windsurfrules` file contains AI configuration for Windsurf.
@@ -200,7 +209,3 @@ This project is currently in the **MVP development phase**.
 ## Contributing
 
 Please follow the AI guidelines and coding practices defined in the AI configuration files when contributing to this project. Contributions are welcome—feel free to submit pull requests for bug fixes, features, or improvements.
-
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for details.
