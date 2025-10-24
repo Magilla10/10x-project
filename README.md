@@ -21,13 +21,13 @@ The AI Flashcard Generator addresses the time-consuming nature of manually creat
 
 ## Tech Stack
 
-| Category            | Technology                                                                                                                                                                                        |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Frontend**        | [Astro 5](https://astro.build/), [React 19](https://react.dev/), [TypeScript 5](https://www.typescriptlang.org/), [Tailwind CSS 4](https://tailwindcss.com/), [Shadcn/ui](https://ui.shadcn.com/) |
-| **Backend**         | [Supabase](https://supabase.io/) (PostgreSQL, Authentication, BaaS)                                                                                                                               |
-| **AI Services**     | [OpenRouter.ai](https://openrouter.ai/)                                                                                                                                                           |
+| Category            | Technology                                                                                                                                                                                          |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend**        | [Astro 5](https://astro.build/), [React 19](https://react.dev/), [TypeScript 5](https://www.typescriptlang.org/), [Tailwind CSS 4](https://tailwindcss.com/), [Shadcn/ui](https://ui.shadcn.com/)   |
+| **Backend**         | [Supabase](https://supabase.io/) (PostgreSQL, Authentication, BaaS)                                                                                                                                 |
+| **AI Services**     | [OpenRouter.ai](https://openrouter.ai/)                                                                                                                                                             |
 | **Testing**         | [Vitest](https://vitest.dev/) (Unit & Integration), [React Testing Library](https://testing-library.com/react), [Playwright](https://playwright.dev/) (E2E), [MSW](https://mswjs.io/) (API Mocking) |
-| **CI/CD & Hosting** | [GitHub Actions](https://github.com/features/actions), [DigitalOcean](https://www.digitalocean.com/) (Docker)                                                                                     |
+| **CI/CD & Hosting** | [GitHub Actions](https://github.com/features/actions), [DigitalOcean](https://www.digitalocean.com/) (Docker)                                                                                       |
 
 ## Getting Started Locally
 
@@ -91,7 +91,13 @@ The following scripts are available in the `package.json`:
 - `npm run lint`: Lints the codebase for errors.
 - `npm run lint:fix`: Lints the codebase and automatically fixes issues.
 - `npm run format`: Formats the code using Prettier.
-- `npm run test`: Runs unit and integration tests using Vitest.
+- `npm run test`: Runs all unit tests in CI mode using Vitest.
+- `npm run test:unit`: Runs Vitest in standard mode (watch-aware).
+- `npm run test:unit:watch`: Runs Vitest in watch mode.
+- `npm run test:e2e`: Runs Playwright tests in headless mode.
+- `npm run test:e2e:headed`: Runs Playwright tests with a visible browser.
+- `npm run test:e2e:debug`: Runs Playwright tests with the inspector for debugging.
+- `npm run test:all`: Runs unit tests followed by E2E tests.
 
 ## Project Structure
 
@@ -162,14 +168,23 @@ The project implements a comprehensive testing strategy following the test pyram
 
 **Vitest** serves as the primary test runner for unit and integration tests, providing a fast and Jest-compatible testing environment:
 
+- **Środowisko testowe**: testy uruchamiają się w `jsdom`. Pakiet jest dodany jako zależność deweloperska — po `npm install` wszystko jest gotowe. Jeśli uruchamiasz tylko fragment projektu lub dostajesz komunikat `Cannot find dependency 'jsdom'`, doinstaluj go ręcznie poleceniem:
+  ```bash
+  npm install --save-dev jsdom
+  ```
 - **React Testing Library**: Tests React components by simulating user interactions without testing implementation details
+- **Setup File**: `vitest.setup.ts` registers global utilities and performs cleanup after each test run.
+- **Configuration**: `vitest.config.ts` enables jsdom, coverage reporting to `coverage/unit`, and JUnit output under `reports/vitest` for CI.
 
 ### End-to-End Tests
 
 **Playwright** provides browser automation for comprehensive E2E testing:
 
 - Tests complete user workflows from authentication to flashcard generation
-- Validates cross-browser compatibility (Chrome, Firefox, Safari)
+- Validates Chromium-based user journeys using the desktop Chrome profile
+- Stores traces, screenshots, and test reports in `reports/playwright`
+- Configure base URL via `PLAYWRIGHT_BASE_URL` (defaults to `http://localhost:4321`)
+- Uses parallel execution with isolated browser contexts
 
 For detailed testing scenarios and acceptance criteria, see `.ai/quality/test-plan.md`.
 
