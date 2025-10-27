@@ -2,266 +2,70 @@
 
 An MVP web application for automatically generating high-quality educational flashcards using AI, designed to streamline the learning process and promote the effective use of spaced repetition.
 
-## Table of Contents
-
-- [Project Description](#project-description)
-- [Tech Stack](#tech-stack)
-- [Getting Started Locally](#getting-started-locally)
-- [Available Scripts](#available-scripts)
-- [Project Structure](#project-structure)
-- [Project Scope](#project-scope)
-- [AI Development Support](#ai-development-support)
-- [Project Status](#project-status)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Project Description
-
-The AI Flashcard Generator addresses the time-consuming nature of manually creating study materials. By leveraging AI, users can quickly generate flashcards from source text, manage them, and utilize a simple spaced repetition system to enhance their learning efficiency. The platform provides user authentication to ensure data privacy and a clean, intuitive interface for a seamless experience.
-
 ## Tech Stack
 
-| Category            | Technology                                                                                                                                                                                          |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Frontend**        | [Astro 5](https://astro.build/), [React 19](https://react.dev/), [TypeScript 5](https://www.typescriptlang.org/), [Tailwind CSS 4](https://tailwindcss.com/), [Shadcn/ui](https://ui.shadcn.com/)   |
-| **Backend**         | [Supabase](https://supabase.io/) (PostgreSQL, Authentication, BaaS)                                                                                                                                 |
-| **AI Services**     | [OpenRouter.ai](https://openrouter.ai/)                                                                                                                                                             |
-| **Testing**         | [Vitest](https://vitest.dev/) (Unit & Integration), [React Testing Library](https://testing-library.com/react), [Playwright](https://playwright.dev/) (E2E), [MSW](https://mswjs.io/) (API Mocking) |
-| **CI/CD & Hosting** | [GitHub Actions](https://github.com/features/actions), [DigitalOcean](https://www.digitalocean.com/) (Docker)                                                                                       |
+- **Frontend**: Astro 5, React 19, TypeScript 5, Tailwind CSS 4, Shadcn/ui
+- **Backend**: Supabase (PostgreSQL, Authentication, BaaS)
+- **AI Services**: OpenRouter.ai
+- **Testing**: Vitest, Playwright, React Testing Library
+- **CI/CD**: GitHub Actions
 
-## Getting Started Locally
-
-To set up and run the project on your local machine, follow these steps.
+## Getting Started
 
 ### Prerequisites
 
-- Node.js version `22.14.0` (it is recommended to use `nvm` to manage Node.js versions).
-- Access keys for Supabase and OpenRouter.ai.
+- Node.js version `22.14.0` (recommended to use `nvm`)
+- Supabase and OpenRouter.ai API keys
 
 ### Installation
 
-1.  **Clone the repository:**
-
-    ```bash
-    git clone https://github.com/your-username/ai-flashcard-generator.git
-    cd ai-flashcard-generator
-    ```
-
-2.  **Set up environment variables:**
-    Create a `.env` file in the root of the project and add your Supabase and OpenRouter API keys.
-
-    ```env
-    PUBLIC_SUPABASE_URL="your-supabase-url"
-    PUBLIC_SUPABASE_ANON_KEY="your-supabase-anon-key"
-    OPENROUTER_API_KEY="your-openrouter-api-key"
-    ```
-
-    **OpenRouter Configuration:**
-    - Get your API key from [OpenRouter Keys](https://openrouter.ai/keys)
-    - The `OPENROUTER_API_KEY` is required for AI-powered flashcard generation
-    - Optional: Set `OPENROUTER_BASE_URL` to override the default endpoint (default: `https://openrouter.ai/api`)
-    - Optional: Set `APP_URL` for proper request attribution (default: `http://localhost:4321`)
-
-3.  **Switch to the correct Node.js version:**
-    If you are using `nvm`, run the following command:
-
-    ```bash
-    nvm use
-    ```
-
-4.  **Install dependencies:**
-
-    ```bash
-    npm install
-    ```
-
-5.  **Run the development server:**
-    ```bash
-    npm run dev
-    ```
-    The application will be available at `http://localhost:4321`.
-
-## Available Scripts
-
-The following scripts are available in the `package.json`:
-
-- `npm run dev`: Starts the development server.
-- `npm run build`: Builds the application for production.
-- `npm run preview`: Previews the production build locally.
-- `npm run lint`: Lints the codebase for errors.
-- `npm run lint:fix`: Lints the codebase and automatically fixes issues.
-- `npm run format`: Formats the code using Prettier.
-- `npm run test`: Runs all unit tests in CI mode using Vitest.
-- `npm run test:unit`: Runs Vitest in standard mode (watch-aware).
-- `npm run test:unit:watch`: Runs Vitest in watch mode.
-- `npm run test:e2e`: Runs Playwright tests in headless mode.
-- `npm run test:e2e:headed`: Runs Playwright tests with a visible browser.
-- `npm run test:e2e:debug`: Runs Playwright tests with the inspector for debugging.
-- `npm run test:all`: Runs unit tests followed by E2E tests.
-
-## Project Structure
-
-When introducing changes to the project, always follow the directory structure below:
-
-```md
-.
-├── src/
-│ ├── layouts/ # Astro layouts
-│ ├── pages/ # Astro pages
-│ │ └── api/ # API endpoints
-│ ├── components/ # UI components (Astro & React)
-│ │ └── ui/ # Shadcn/ui components
-│ ├── lib/ # Services and utilities
-│ │ ├── services/ # Business logic services
-│ │ ├── api/ # API client functions
-│ │ ├── hooks/ # React hooks
-│ │ ├── validators/ # Zod validation schemas
-│ │ └── utils/ # Utility functions
-│ ├── db/ # Database clients and types
-│ ├── middleware/ # Astro middleware
-│ ├── types.ts # Shared TypeScript types
-│ └── assets/ # Static assets
-├── public/ # Public assets
-└── supabase/ # Supabase migrations and config
-```
-
-### Key Services
-
-**OpenRouter Service** (`src/lib/services/openrouter.service.ts`)
-
-The OpenRouter service provides a robust integration with OpenRouter API for AI-powered chat completions:
-
-- **Structured Communication**: Support for system and user messages with role-based conversation flow
-- **JSON Schema Validation**: Enforces structured responses with Zod schema validation
-- **Error Handling**: Comprehensive error handling with custom error classes for different failure scenarios
-- **Automatic Retries**: Exponential backoff for transient errors (network issues, rate limits)
-- **Type Safety**: Full TypeScript support with generic response types
-- **Security**: Secure API key management via environment variables
-
-**Example Usage:**
-
-```typescript
-import { OpenRouterService } from '@/lib/services/openrouter.service';
-
-const service = new OpenRouterService({
-  apiKey: import.meta.env.OPENROUTER_API_KEY,
-  defaultModel: 'gpt-3.5-turbo',
-  defaultParameters: { temperature: 0.7 }
-});
-
-const response = await service.sendChatCompletion([
-  { role: 'system', content: 'You are a helpful assistant' },
-  { role: 'user', content: 'Generate flashcards from this text...' }
-], {
-  response_format: {
-    type: 'json_schema',
-    json_schema: { name: 'FlashcardSchema', strict: true, schema: {...} }
-  }
-});
-```
-
-## Testing Strategy
-
-The project implements a comprehensive testing strategy following the test pyramid approach to ensure reliability and maintainability.
-
-### Unit & Integration Tests
-
-**Vitest** serves as the primary test runner for unit and integration tests, providing a fast and Jest-compatible testing environment:
-
-- **Środowisko testowe**: testy uruchamiają się w `jsdom`. Pakiet jest dodany jako zależność deweloperska — po `npm install` wszystko jest gotowe. Jeśli uruchamiasz tylko fragment projektu lub dostajesz komunikat `Cannot find dependency 'jsdom'`, doinstaluj go ręcznie poleceniem:
-  ```bash
-  npm install --save-dev jsdom
-  ```
-- **React Testing Library**: Tests React components by simulating user interactions without testing implementation details
-- **Setup File**: `vitest.setup.ts` registers global utilities and performs cleanup after each test run.
-- **Configuration**: `vitest.config.ts` enables jsdom, coverage reporting to `coverage/unit`, and JUnit output under `reports/vitest` for CI.
-
-### End-to-End Tests
-
-**Playwright** provides browser automation for comprehensive E2E testing:
-
-- Validates Chromium-based user journeys using the desktop Chrome profile
-- Stores traces, screenshots, and test reports in `reports/playwright`
-- Configure base URL via `PLAYWRIGHT_BASE_URL` (defaults to `http://localhost:4321`)
-- Uses parallel execution with isolated browser contexts
-
-#### Setting Up E2E Tests
-
-Before running E2E tests, you need to configure the test environment:
-
-1. **Create a test user in your database** (Supabase):
-   - Register a dedicated test user through the application UI or directly in Supabase
-   - Use a recognizable email like `e2e.test@yourdomain.com`
-   - Remember the credentials - you'll need them in the next step
-
-2. **Create `.env.test` file** in the project root:
+1. **Clone the repository:**
    ```bash
-   # Test user credentials
-   E2E_USERNAME=your-test-user@example.com
-   E2E_PASSWORD=your-test-password
-   
-   # Application URL for tests
-   PLAYWRIGHT_BASE_URL=http://localhost:4321
+   git clone https://github.com/your-username/ai-flashcard-generator.git
+   cd ai-flashcard-generator
    ```
 
-   **Important**: The `.env.test` file is gitignored and should never be committed to version control.
-
-3. **Run the tests**:
-   ```bash
-   npm run test:e2e
+2. **Set up environment variables:**
+   Create a `.env` file with:
+   ```env
+   PUBLIC_SUPABASE_URL="your-supabase-url"
+   PUBLIC_SUPABASE_ANON_KEY="your-supabase-anon-key"
+   OPENROUTER_API_KEY="your-openrouter-api-key"
    ```
 
-#### Current E2E Test Suite
+3. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-The project includes E2E tests implemented with the Page Object Model pattern:
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+   The application will be available at `http://localhost:4321`.
 
-**Basic Tests** (`tests/e2e/basic.spec.ts`):
-1. **Homepage Navigation Test**: Verifies that the main page displays "Zaloguj się" (Login) and "Rejestracja" (Register) buttons for unauthenticated users
-2. **Login Form Test**: Navigates from homepage to login page and verifies the presence of email input, password input, and login button
-3. **Registration Form Test**: Navigates from homepage to registration page and verifies the presence of email input, name input, password input, confirm password input, and registration button
+### Available Scripts
 
-**Authentication Tests** (`tests/e2e/auth.spec.ts`):
-1. **Login Flow Test**: Verifies that a user can log in with valid credentials and is redirected to the generate page
-2. **Authenticated State Test**: Confirms that a logged-in user sees the logout button and their email address
-3. **Logout Flow Test**: Verifies that a user can log out and is redirected to the homepage
-
-Tests use `data-test-id` attributes for reliable element selection and follow a maintainable Page Object Model architecture with helper utilities for authentication.
-
-For detailed testing scenarios and acceptance criteria, see `.ai/quality/test-plan.md`.
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run test` - Run unit tests
+- `npm run test:e2e` - Run end-to-end tests
+- `npm run lint` - Lint code
 
 ## Project Scope
 
 ### In Scope (MVP Features)
 
-- **AI-Powered Flashcard Generation**: Automatically create flashcards from user-provided text.
-- **Manual Flashcard Management**: Create, view, edit, and delete flashcards manually.
-- **User Authentication**: Secure user registration and login to ensure data isolation.
-- **Spaced Repetition System**: A basic algorithm to help schedule study sessions.
-- **Account Deletion**: Ability for users to permanently delete their account and all associated data.
-
-## AI Development Support
-
-This project is configured with AI development tools to enhance the development experience, providing guidelines for:
-
-- Project structure
-- Coding practices
-- Frontend development
-- Styling with Tailwind
-- Accessibility best practices
-- Astro and React guidelines
-
-### Cursor IDE
-
-The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
-
-### Windsurf
-
-The `.windsurfrules` file contains AI configuration for Windsurf.
-
-## Project Status
-
-This project is currently in the **MVP development phase**.
+- **AI-Powered Flashcard Generation**: Automatically create flashcards from user-provided text
+- **Manual Flashcard Management**: Create, view, edit, and delete flashcards manually
+- **User Authentication**: Secure user registration and login to ensure data isolation
+- **Spaced Repetition System**: A basic algorithm to help schedule study sessions
+- **Account Deletion**: Ability for users to permanently delete their account and all associated data
 
 ## Contributing
 
-Please follow the AI guidelines and coding practices defined in the AI configuration files when contributing to this project. Contributions are welcome—feel free to submit pull requests for bug fixes, features, or improvements.
+Contributions are welcome! Please submit pull requests for bug fixes, features, or improvements.
+
+## License
+
+[MIT License](LICENSE)
