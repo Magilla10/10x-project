@@ -121,6 +121,15 @@ export function LoginForm({ className }: LoginFormProps) {
             )}
           </Button>
         </form>
+
+        <div className="text-center">
+          <a
+            href="/forgot-password"
+            className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4"
+          >
+            Nie pamiętasz hasła?
+          </a>
+        </div>
       </CardContent>
     </Card>
   );
