@@ -18,26 +18,12 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'  # Obniżono do LTS dla stabilności; przywróć do 24 jeśli potrzeba
-
-      - name: Check Node and npm versions
-        run: node --version && npm --version
-
-      - name: Aktualizuj npm
-        run: corepack prepare npm@10.9.2 --activate
-
-      - name: Przełącz na publiczne registry
-        run: npm config set registry https://registry.npmjs.org/
-
-      - name: Ustaw retry dla npm
-        run: |
-          npm config set fetch-retry-maxtimeout 120000
-          npm config set fetch-retry-mintimeout 20000
-          npm config set fetch-retries 5
+          node-version: '24'
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --no-audit --progress=false  # Przywrócono npm ci z flagami stabilizującymi
-        timeout-minutes: 10  # Przerwij po 10 min jeśli zawiesza się
+        run: npm ci
 
       - name: Lint code
         run: npm run lint
@@ -58,26 +44,12 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'  # Spójne z zadaniem test
-
-      - name: Check Node and npm versions
-        run: node --version && npm --version
-
-      - name: Aktualizuj npm
-        run: corepack prepare npm@10.9.2 --activate
-
-      - name: Przełącz na publiczne registry
-        run: npm config set registry https://registry.npmjs.org/
-
-      - name: Ustaw retry dla npm
-        run: |
-          npm config set fetch-retry-maxtimeout 120000
-          npm config set fetch-retry-mintimeout 20000
-          npm config set fetch-retries 5
+          node-version: '24'
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --no-audit --progress=false  # Przywrócono npm ci z flagami stabilizującymi
-        timeout-minutes: 10
+        run: npm ci
 
       - name: Build for production
         run: npm run build
