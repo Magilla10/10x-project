@@ -19,8 +19,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'  # Obniżono do LTS dla stabilności; przywróć do 24 jeśli potrzeba
-          node-version-file: '.nvmrc'
-          cache: false  # Wyłączone tymczasowo, jeśli zawiesza się dalej
 
       - name: Check Node and npm versions
         run: node --version && npm --version
@@ -49,8 +47,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'  # Spójne z zadaniem test
-          node-version-file: '.nvmrc'
-          cache: false  # Wyłączone tymczasowo
 
       - name: Check Node and npm versions
         run: node --version && npm --version
