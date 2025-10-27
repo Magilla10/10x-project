@@ -16,8 +16,12 @@ export function persistSessionTokens(session: Session) {
     return;
   }
 
-  document.cookie = `${ACCESS_TOKEN_COOKIE}=${accessToken}; Path=/; Max-Age=${COOKIE_MAX_AGE}; SameSite=Lax; Secure`;
-  document.cookie = `${REFRESH_TOKEN_COOKIE}=${refreshToken}; Path=/; Max-Age=${COOKIE_MAX_AGE}; SameSite=Lax; Secure`;
+  // Use Secure flag only in production (HTTPS)
+  const isProduction = window.location.protocol === "https:";
+  const secureFlag = isProduction ? "; Secure" : "";
+
+  document.cookie = `${ACCESS_TOKEN_COOKIE}=${accessToken}; Path=/; Max-Age=${COOKIE_MAX_AGE}; SameSite=Lax${secureFlag}`;
+  document.cookie = `${REFRESH_TOKEN_COOKIE}=${refreshToken}; Path=/; Max-Age=${COOKIE_MAX_AGE}; SameSite=Lax${secureFlag}`;
 }
 
 export function clearSessionCookies() {
@@ -25,6 +29,10 @@ export function clearSessionCookies() {
     return;
   }
 
-  document.cookie = `${ACCESS_TOKEN_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax; Secure`;
-  document.cookie = `${REFRESH_TOKEN_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax; Secure`;
+  // Use Secure flag only in production (HTTPS)
+  const isProduction = window.location.protocol === "https:";
+  const secureFlag = isProduction ? "; Secure" : "";
+
+  document.cookie = `${ACCESS_TOKEN_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax${secureFlag}`;
+  document.cookie = `${REFRESH_TOKEN_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax${secureFlag}`;
 }
