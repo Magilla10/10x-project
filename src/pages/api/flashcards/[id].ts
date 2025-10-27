@@ -112,9 +112,3 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     return errorResponse(500, "INTERNAL_ERROR", "An unexpected error occurred");
   }
 };
-
-
-
-
-
-

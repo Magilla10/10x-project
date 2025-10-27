@@ -4,12 +4,7 @@ import { Loader2, Pencil, Save, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  ApiError,
-  deleteFlashcardRequest,
-  getFlashcards,
-  patchFlashcard,
-} from "@/lib/api/aiGenerationsClient";
+import { ApiError, deleteFlashcardRequest, getFlashcards, patchFlashcard } from "@/lib/api/aiGenerationsClient";
 import type { FlashcardDto } from "@/types";
 
 interface EditableFlashcard extends FlashcardDto {
@@ -196,7 +191,7 @@ export function FlashcardsList() {
   if (isLoading) {
     return (
       <div className="flex justify-center py-12" role="status" aria-live="polite">
-        <Loader2 className="size-6 animate-spin" aria-hidden="true" />
+        <div className="h-12 w-12 animate-spin rounded-full border-2 border-white/30 border-t-white/90" />
         <span className="sr-only">Ładowanie fiszek...</span>
       </div>
     );
@@ -204,14 +199,14 @@ export function FlashcardsList() {
 
   if (loadError) {
     return (
-      <Card>
+      <Card className="border-white/15 bg-white/10 text-white shadow-2xl shadow-indigo-950/30 backdrop-blur-xl">
         <CardHeader>
-          <CardTitle>Twoje fiszki</CardTitle>
-          <CardDescription>Wystąpił błąd podczas ładowania fiszek</CardDescription>
+          <CardTitle className="text-white">Twoje fiszki</CardTitle>
+          <CardDescription className="text-white/70">Wystąpił błąd podczas ładowania fiszek</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-destructive">{loadError}</p>
-          <Button className="mt-4" onClick={() => window.location.reload()}>
+          <p className="text-sm text-red-100/90">{loadError}</p>
+          <Button className="mt-4 shadow-lg shadow-indigo-500/30" onClick={() => window.location.reload()}>
             Odśwież stronę
           </Button>
         </CardContent>
@@ -221,13 +216,13 @@ export function FlashcardsList() {
 
   if (flashcards.length === 0) {
     return (
-      <Card>
+      <Card className="border-white/15 bg-white/10 text-white shadow-2xl shadow-indigo-950/30 backdrop-blur-xl">
         <CardHeader>
-          <CardTitle>Twoje fiszki</CardTitle>
-          <CardDescription>Na razie nie masz żadnych fiszek.</CardDescription>
+          <CardTitle className="text-white">Twoje fiszki</CardTitle>
+          <CardDescription className="text-white/70">Na razie nie masz żadnych fiszek.</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-white/60">
             Dodaj fiszki na stronie generowania lub ręcznie, aby pojawiły się w tym miejscu.
           </p>
         </CardContent>
@@ -238,113 +233,153 @@ export function FlashcardsList() {
   return (
     <>
       {successMessage && (
-        <div className="mb-4 p-3 rounded-md bg-green-50 border border-green-500 dark:bg-green-950/20">
-          <p className="text-sm text-green-700 dark:text-green-400">{successMessage}</p>
+        <div className="mb-4 rounded-xl border border-emerald-300/60 bg-emerald-400/15 p-3" data-test-id="flashcard-deleted-message">
+          <p className="text-sm text-emerald-100">{successMessage}</p>
         </div>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {flashcards.map((flashcard) => (
-        <Card key={flashcard.id} aria-live="polite">
-          <CardHeader className="flex-row items-center justify-between gap-4">
-            <div>
-              <CardTitle>Fiszka</CardTitle>
-              <CardDescription>{flashcard.source === "manual" ? "Dodana ręcznie" : "Wygenerowana przez AI"}</CardDescription>
-            </div>
-            <div className="flex gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {flashcards.map((flashcard) => (
+          <Card
+            key={flashcard.id}
+            className="border-white/10 bg-white/10 text-white shadow-2xl shadow-indigo-950/20 backdrop-blur-xl transition duration-300"
+            aria-live="polite"
+            data-test-id={`flashcard-item-${flashcard.id}`}
+          >
+            <CardHeader className="flex-row items-center justify-between gap-4">
+              <div>
+                <CardTitle className="text-white">Fiszka</CardTitle>
+                <CardDescription className="text-white/60">
+                  {flashcard.source === "manual" ? "Dodana ręcznie" : "Wygenerowana przez AI"}
+                </CardDescription>
+              </div>
+              <div className="flex gap-2">
+                {flashcard.isEditing ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleCancelEdit(flashcard.id)}
+                      disabled={flashcard.isSaving}
+                      className="border-white/50 text-slate-900 bg-white/80 hover:bg-white/90"
+                      data-test-id={`cancel-edit-flashcard-button-${flashcard.id}`}
+                    >
+                      <X className="size-4" aria-hidden="true" /> Anuluj
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => handleSave(flashcard.id)}
+                      disabled={flashcard.isSaving || flashcard.isDeleting}
+                      className="bg-emerald-600 text-white hover:bg-emerald-500 shadow-lg shadow-emerald-500/30"
+                      data-test-id={`save-flashcard-button-${flashcard.id}`}
+                    >
+                      {flashcard.isSaving ? (
+                        <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                      ) : (
+                        <Save className="size-4" aria-hidden="true" />
+                      )}
+                      Zapisz
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleStartEdit(flashcard.id)}
+                      disabled={flashcard.isDeleting}
+                      className="border-white/50 text-slate-900 bg-white/80 hover:bg-white/90"
+                      data-test-id={`edit-flashcard-button-${flashcard.id}`}
+                    >
+                      <Pencil className="size-4" aria-hidden="true" /> Edytuj
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDelete(flashcard.id)}
+                      disabled={flashcard.isDeleting || flashcard.isSaving}
+                      className="border-red-400/80 bg-red-500/80 text-red-100 hover:bg-red-500"
+                      data-test-id={`delete-flashcard-button-${flashcard.id}`}
+                    >
+                      {flashcard.isDeleting ? (
+                        <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                      ) : (
+                        <Trash2 className="size-4" aria-hidden="true" />
+                      )}
+                      Usuń
+                    </Button>
+                  </>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
               {flashcard.isEditing ? (
                 <>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleCancelEdit(flashcard.id)}
-                    disabled={flashcard.isSaving}
-                  >
-                    <X className="size-4" aria-hidden="true" /> Anuluj
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => handleSave(flashcard.id)}
-                    disabled={flashcard.isSaving || flashcard.isDeleting}
-                  >
-                    {flashcard.isSaving ? (
-                      <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-                    ) : (
-                      <Save className="size-4" aria-hidden="true" />
-                    )}
-                    Zapisz
-                  </Button>
+                  <div className="space-y-2">
+                    <h3 className="text-xs font-medium uppercase tracking-wide text-white/60">Przód</h3>
+                    <Textarea
+                      value={flashcard.draftFront ?? ""}
+                      onChange={(event) => handleDraftChange(flashcard.id, "draftFront", event.target.value)}
+                      rows={3}
+                      disabled={flashcard.isSaving}
+                      className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white shadow-lg shadow-indigo-950/10 transition placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-300/80"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-xs font-medium uppercase tracking-wide text-white/60">Tył</h3>
+                    <Textarea
+                      value={flashcard.draftBack ?? ""}
+                      onChange={(event) => handleDraftChange(flashcard.id, "draftBack", event.target.value)}
+                      rows={4}
+                      disabled={flashcard.isSaving}
+                      className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white shadow-lg shadow-indigo-950/10 transition placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-300/80"
+                    />
+                  </div>
                 </>
               ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleStartEdit(flashcard.id)}
-                  disabled={flashcard.isDeleting}
-                >
-                  <Pencil className="size-4" aria-hidden="true" /> Edytuj
-                </Button>
+                <>
+                  {!flashcard.isFlipped ? (
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => handleFlip(flashcard.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleFlip(flashcard.id);
+                        }
+                      }}
+                      tabIndex={0}
+                      role="button"
+                      aria-label="Obróć fiszkę na tył"
+                    >
+                      <h3 className="text-xs font-medium uppercase tracking-wide text-white/60">Przód</h3>
+                      <p className="mt-3 whitespace-pre-line text-sm text-white/90">{flashcard.front}</p>
+                    </div>
+                  ) : (
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => handleFlip(flashcard.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleFlip(flashcard.id);
+                        }
+                      }}
+                      tabIndex={0}
+                      role="button"
+                      aria-label="Obróć fiszkę na przód"
+                    >
+                      <h3 className="text-xs font-medium uppercase tracking-wide text-white/60">Tył</h3>
+                      <p className="mt-3 whitespace-pre-line text-sm text-white/90">{flashcard.back}</p>
+                    </div>
+                  )}
+                </>
               )}
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => handleDelete(flashcard.id)}
-                disabled={flashcard.isDeleting || flashcard.isSaving}
-              >
-                {flashcard.isDeleting ? (
-                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-                ) : (
-                  <Trash2 className="size-4" aria-hidden="true" />
-                )}
-                Usuń
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {flashcard.isEditing ? (
-              <>
-                <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground">Przód</h3>
-                  <Textarea
-                    value={flashcard.draftFront ?? ""}
-                    onChange={(event) => handleDraftChange(flashcard.id, "draftFront", event.target.value)}
-                    rows={3}
-                    disabled={flashcard.isSaving}
-                  />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground">Tył</h3>
-                  <Textarea
-                    value={flashcard.draftBack ?? ""}
-                    onChange={(event) => handleDraftChange(flashcard.id, "draftBack", event.target.value)}
-                    rows={4}
-                    disabled={flashcard.isSaving}
-                  />
-                </div>
-              </>
-            ) : (
-              <>
-                {!flashcard.isFlipped ? (
-                  <div className="cursor-pointer" onClick={() => handleFlip(flashcard.id)}>
-                    <h3 className="text-sm font-semibold text-muted-foreground">Przód</h3>
-                    <p className="mt-2 whitespace-pre-line text-sm">{flashcard.front}</p>
-                  </div>
-                ) : (
-                  <div className="cursor-pointer" onClick={() => handleFlip(flashcard.id)}>
-                    <h3 className="text-sm font-semibold text-muted-foreground">Tył</h3>
-                    <p className="mt-2 whitespace-pre-line text-sm">{flashcard.back}</p>
-                  </div>
-                )}
-              </>
-            )}
 
-            {flashcard.error && (
-              <p className="text-sm text-destructive">{flashcard.error}</p>
-            )}
-          </CardContent>
-        </Card>
-      ))}
+              {flashcard.error && <p className="text-sm text-red-300">{flashcard.error}</p>}
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </>
   );
 }
-

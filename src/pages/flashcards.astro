@@ -6,22 +6,47 @@ export const prerender = false;
 ---
 
 <Layout title="Moje fiszki">
-  <div class="bg-background min-h-screen">
-    <div class="container mx-auto max-w-5xl px-4 py-10">
-      <header class="mb-8">
-        <h1 class="text-3xl font-bold tracking-tight">Moje fiszki</h1>
-        <p class="text-muted-foreground mt-2 text-sm">
-          Przeglądaj, edytuj i usuwaj własne fiszki. Dodawaj nowe w sekcji generowania.
-        </p>
+  <div
+    class="relative isolate min-h-screen overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-950 to-blue-900 text-white"
+  >
+    <div class="pointer-events-none absolute inset-0 -z-10">
+      <div
+        class="absolute left-1/2 top-[-20%] h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-indigo-500/30 blur-3xl"
+      >
+      </div>
+      <div class="absolute bottom-[-25%] right-[10%] h-[520px] w-[520px] rounded-full bg-blue-500/25 blur-3xl"></div>
+      <div class="absolute bottom-[5%] left-[-12%] h-[360px] w-[360px] rounded-full bg-purple-600/20 blur-[140px]">
+      </div>
+    </div>
+
+    <div class="relative mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 pb-20 pt-16 md:px-8 lg:gap-16">
+      <header class="space-y-8 text-center text-white md:text-left">
+        <div
+          class="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-indigo-100/90 md:justify-start"
+        >
+          <span class="size-2 rounded-full bg-indigo-300 shadow-[0_0_0_4px_rgba(129,140,248,0.35)]" aria-hidden="true"
+          ></span>
+          Tryb przeglądania
+        </div>
+
+        <div class="space-y-4">
+          <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">Moje fiszki</h1>
+          <p class="mx-auto max-w-3xl text-base text-white/75 md:text-lg md:leading-relaxed md:text-white/80 lg:mx-0">
+            Przeglądaj swoją kolekcję fiszek. Edytuj, usuwaj lub dodawaj nowe karty, aby optymalizować naukę.
+          </p>
+        </div>
+
+        <div class="flex justify-center md:justify-start">
+          <a
+            href="/generate"
+            class="inline-flex items-center justify-center rounded-full bg-indigo-500/90 px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-indigo-500/30 transition hover:bg-indigo-500 hover:scale-105"
+          >
+            Dodaj nowe fiszki
+          </a>
+        </div>
       </header>
 
       <FlashcardsList client:load />
     </div>
   </div>
 </Layout>
-
-
-
-
-
-

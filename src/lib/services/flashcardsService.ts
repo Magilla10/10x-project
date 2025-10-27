@@ -156,12 +156,7 @@ export async function updateFlashcard(
 export async function deleteFlashcard(id: string, context: ServiceContext): Promise<void> {
   const { supabase, userId } = context;
 
-  const { data, error } = await supabase
-    .from("flashcards")
-    .delete()
-    .eq("user_id", userId)
-    .eq("id", id)
-    .select("id");
+  const { data, error } = await supabase.from("flashcards").delete().eq("user_id", userId).eq("id", id).select("id");
 
   if (error) {
     throw new FlashcardsServiceError("Failed to delete flashcard", "DB_WRITE_FAILED", 500, error);

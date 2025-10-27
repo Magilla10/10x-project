@@ -4,8 +4,7 @@ export function extractRecoveryTokenFromHash(hash: string | null | undefined): s
   }
 
   const params = new URLSearchParams(hash.replace(/^#/, ""));
-  const token =
-    params.get("access_token") ?? params.get("token") ?? params.get("code") ?? params.get("recovery_token");
+  const token = params.get("access_token") ?? params.get("token") ?? params.get("code") ?? params.get("recovery_token");
   return token ?? undefined;
 }
 

@@ -90,6 +90,7 @@ export function RegisterForm({ className }: RegisterFormProps) {
                 aria-invalid={isEmailInvalid ? "true" : undefined}
                 aria-describedby={isEmailInvalid ? "register-email-error" : undefined}
                 disabled={isPending}
+                data-test-id="register-email-input"
               />
               {isEmailInvalid ? (
                 <p id="register-email-error" className="text-sm text-destructive">
@@ -108,6 +109,7 @@ export function RegisterForm({ className }: RegisterFormProps) {
                 value={displayName}
                 onChange={(event) => setDisplayName(event.target.value)}
                 disabled={isPending}
+                data-test-id="register-display-name-input"
               />
             </div>
 
@@ -125,6 +127,7 @@ export function RegisterForm({ className }: RegisterFormProps) {
                   aria-invalid={isPasswordInvalid ? "true" : undefined}
                   aria-describedby={isPasswordInvalid ? "register-password-error" : undefined}
                   disabled={isPending}
+                  data-test-id="register-password-input"
                 />
                 {isPasswordInvalid ? (
                   <p id="register-password-error" className="text-sm text-destructive">
@@ -146,6 +149,7 @@ export function RegisterForm({ className }: RegisterFormProps) {
                   aria-invalid={isConfirmPasswordInvalid ? "true" : undefined}
                   aria-describedby={isConfirmPasswordInvalid ? "register-confirm-password-error" : undefined}
                   disabled={isPending}
+                  data-test-id="register-confirm-password-input"
                 />
                 {isConfirmPasswordInvalid ? (
                   <p id="register-confirm-password-error" className="text-sm text-destructive">
@@ -161,7 +165,7 @@ export function RegisterForm({ className }: RegisterFormProps) {
             {formSuccess ? <p className="text-sm text-center text-green-600">{formSuccess}</p> : null}
           </div>
 
-          <Button type="submit" className="w-full" size="lg" disabled={isPending}>
+          <Button type="submit" className="w-full" size="lg" disabled={isPending} data-test-id="register-submit-button">
             {isPending ? (
               <span className="flex items-center justify-center gap-2">
                 <Loader2 className="size-4 animate-spin" aria-hidden="true" />

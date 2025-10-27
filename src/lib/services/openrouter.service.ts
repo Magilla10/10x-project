@@ -38,9 +38,11 @@ export const requestPayloadSchema = z.object({
             z.object({
               type: z.enum(["text", "image_url"]),
               text: z.string().optional(),
-              image_url: z.object({
-                url: z.string().url(),
-              }).optional(),
+              image_url: z
+                .object({
+                  url: z.string().url(),
+                })
+                .optional(),
             })
           ),
         ]),

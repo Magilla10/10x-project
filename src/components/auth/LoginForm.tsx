@@ -76,6 +76,7 @@ export function LoginForm({ className }: LoginFormProps) {
                 aria-invalid={isEmailInvalid ? "true" : undefined}
                 aria-describedby={isEmailInvalid ? "login-email-error" : undefined}
                 disabled={isPending}
+                data-test-id="login-email-input"
               />
               {isEmailInvalid ? (
                 <p id="login-email-error" className="text-sm text-destructive">
@@ -97,6 +98,7 @@ export function LoginForm({ className }: LoginFormProps) {
                 aria-invalid={isPasswordInvalid ? "true" : undefined}
                 aria-describedby={isPasswordInvalid ? "login-password-error" : undefined}
                 disabled={isPending}
+                data-test-id="login-password-input"
               />
               {isPasswordInvalid ? (
                 <p id="login-password-error" className="text-sm text-destructive">
@@ -108,7 +110,7 @@ export function LoginForm({ className }: LoginFormProps) {
 
           {formError ? <p className="text-sm text-center text-destructive">{formError}</p> : null}
 
-          <Button type="submit" className="w-full" size="lg" disabled={isPending}>
+          <Button type="submit" className="w-full" size="lg" disabled={isPending} data-test-id="login-submit-button">
             {isPending ? (
               <span className="flex items-center justify-center gap-2">
                 <Loader2 className="size-4 animate-spin" aria-hidden="true" />

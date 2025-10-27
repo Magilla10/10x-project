@@ -61,15 +61,15 @@ export function ManualFlashcardForm({ remainingSlots, onCreated }: ManualFlashca
   };
 
   return (
-    <Card>
+    <Card className="border-white/15 bg-white/10 text-white shadow-2xl shadow-indigo-950/20 backdrop-blur-xl">
       <CardHeader>
-        <CardTitle>Utwórz fiszkę ręcznie</CardTitle>
-        <CardDescription>Dodaj pojedynczą fiszkę bez użycia AI</CardDescription>
+        <CardTitle className="text-white">Utwórz fiszkę ręcznie</CardTitle>
+        <CardDescription className="text-white/70">Dodaj pojedynczą fiszkę bez użycia AI</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         {/* Front */}
         <div>
-          <label htmlFor="manual-flashcard-front" className="block text-sm font-medium mb-2">
+          <label htmlFor="manual-flashcard-front" className="mb-2 block text-sm font-medium text-white/80">
             Przód fiszki (pytanie)
           </label>
           <textarea
@@ -80,19 +80,20 @@ export function ManualFlashcardForm({ remainingSlots, onCreated }: ManualFlashca
             placeholder="Co chcesz zapamiętać?"
             disabled={isSubmitting || remainingSlots === 0}
             className={cn(
-              "w-full px-3 py-2 rounded-md border bg-background resize-y",
-              "focus:outline-none focus:ring-2 focus:ring-ring",
+              "w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white shadow-lg shadow-indigo-950/20 transition",
+              "placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-300/80",
               "disabled:opacity-50",
-              !frontValidation.isValid && front.length > 0 && "border-destructive"
+              !frontValidation.isValid && front.length > 0 && "border-red-400/80 focus:ring-red-300/70"
             )}
+            data-test-id="flashcard-front-input"
           />
-          <div className="flex justify-between mt-1 text-xs">
+          <div className="mt-2 flex justify-between text-xs">
             {!frontValidation.isValid && front.length > 0 ? (
-              <p className="text-destructive">{frontValidation.error}</p>
+              <p className="text-red-300">{frontValidation.error}</p>
             ) : (
-              <p className="text-muted-foreground">10-200 znaków</p>
+              <p className="text-white/60">10-200 znaków</p>
             )}
-            <p className={cn(frontLength >= 10 && frontLength <= 200 ? "text-green-600" : "text-muted-foreground")}>
+            <p className={cn(frontLength >= 10 && frontLength <= 200 ? "text-emerald-300" : "text-white/50")}>
               {frontLength}/200
             </p>
           </div>
@@ -100,7 +101,7 @@ export function ManualFlashcardForm({ remainingSlots, onCreated }: ManualFlashca
 
         {/* Back */}
         <div>
-          <label htmlFor="manual-flashcard-back" className="block text-sm font-medium mb-2">
+          <label htmlFor="manual-flashcard-back" className="mb-2 block text-sm font-medium text-white/80">
             Tył fiszki (odpowiedź)
           </label>
           <textarea
@@ -111,19 +112,20 @@ export function ManualFlashcardForm({ remainingSlots, onCreated }: ManualFlashca
             placeholder="Odpowiedź lub wyjaśnienie..."
             disabled={isSubmitting || remainingSlots === 0}
             className={cn(
-              "w-full px-3 py-2 rounded-md border bg-background resize-y",
-              "focus:outline-none focus:ring-2 focus:ring-ring",
+              "w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white shadow-lg shadow-indigo-950/20 transition",
+              "placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-300/80",
               "disabled:opacity-50",
-              !backValidation.isValid && back.length > 0 && "border-destructive"
+              !backValidation.isValid && back.length > 0 && "border-red-400/80 focus:ring-red-300/70"
             )}
+            data-test-id="flashcard-back-input"
           />
-          <div className="flex justify-between mt-1 text-xs">
+          <div className="mt-2 flex justify-between text-xs">
             {!backValidation.isValid && back.length > 0 ? (
-              <p className="text-destructive">{backValidation.error}</p>
+              <p className="text-red-300">{backValidation.error}</p>
             ) : (
-              <p className="text-muted-foreground">10-500 znaków</p>
+              <p className="text-white/60">10-500 znaków</p>
             )}
-            <p className={cn(backLength >= 10 && backLength <= 500 ? "text-green-600" : "text-muted-foreground")}>
+            <p className={cn(backLength >= 10 && backLength <= 500 ? "text-emerald-300" : "text-white/50")}>
               {backLength}/500
             </p>
           </div>
@@ -131,31 +133,26 @@ export function ManualFlashcardForm({ remainingSlots, onCreated }: ManualFlashca
 
         {/* Messages */}
         {error && (
-          <div className="p-3 rounded-md bg-destructive/10 border border-destructive">
-            <p className="text-sm text-destructive">{error}</p>
+          <div className="rounded-xl border border-red-300/60 bg-red-500/15 p-3">
+            <p className="text-sm text-red-100/90">{error}</p>
           </div>
         )}
 
         {success && (
-          <div className="p-3 rounded-md bg-green-50 border border-green-500 dark:bg-green-950/20">
-            <p className="text-sm text-green-700 dark:text-green-400">Fiszka została utworzona!</p>
+          <div className="rounded-xl border border-emerald-300/60 bg-emerald-400/15 p-3" data-test-id="flashcard-created-message">
+            <p className="text-sm text-emerald-100">Fiszka została utworzona!</p>
           </div>
         )}
 
         {remainingSlots === 0 && (
-          <div className="p-3 rounded-md bg-yellow-50 border border-yellow-500 dark:bg-yellow-950/20">
-            <p className="text-sm text-yellow-700 dark:text-yellow-400">
-              Osiągnięto limit 15 fiszek. Usuń niektóre, aby dodać nowe.
-            </p>
+          <div className="rounded-xl border border-amber-300/60 bg-amber-400/15 p-3">
+            <p className="text-sm text-amber-100">Osiągnięto limit 15 fiszek. Usuń niektóre, aby dodać nowe.</p>
           </div>
         )}
 
         {/* Navigation & Submit */}
-        <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:items-center sm:justify-between">
-          <Button variant="link" asChild className="px-0 text-primary sm:order-1 sm:px-0">
-            <a href="/flashcards">Przejdź do moich fiszek</a>
-          </Button>
-          <Button onClick={handleSubmit} disabled={!canSubmit} className="sm:order-2">
+        <div className="flex justify-end pt-2">
+          <Button onClick={handleSubmit} disabled={!canSubmit} className="shadow-lg shadow-indigo-500/30" data-test-id="add-flashcard-button">
             {isSubmitting ? "Dodawanie..." : "Dodaj fiszkę"}
           </Button>
         </div>

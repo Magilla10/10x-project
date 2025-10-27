@@ -1,4 +1,8 @@
+import dotenv from "dotenv";
+import path from "path";
 import { defineConfig, devices } from "@playwright/test";
+
+dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -17,7 +21,8 @@ export default defineConfig({
       ]
     : "html",
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:4321",
+    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000",
+    testIdAttribute: "data-test-id",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: "retain-on-failure",

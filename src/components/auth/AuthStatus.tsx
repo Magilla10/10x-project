@@ -45,17 +45,7 @@ export function AuthStatus({ className }: AuthStatusProps) {
   }
 
   if (!email) {
-    return (
-      <div className={cn("inline-flex items-center gap-3", className)}>
-        <Button variant="ghost" size="sm" onClick={() => (window.location.href = "/login")}>
-          <LogIn className="size-4" aria-hidden="true" />
-          Zaloguj się
-        </Button>
-        <Button size="sm" onClick={() => (window.location.href = "/register")}>
-          Dołącz
-        </Button>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -66,7 +56,7 @@ export function AuthStatus({ className }: AuthStatusProps) {
         </AvatarFallback>
       </Avatar>
       <span className="text-sm text-muted-foreground hidden sm:inline">{email}</span>
-      <Button variant="ghost" size="sm" onClick={handleLogout}>
+      <Button variant="ghost" size="sm" onClick={handleLogout} data-test-id="auth-logout-button">
         <LogOut className="size-4" aria-hidden="true" />
         Wyloguj
       </Button>

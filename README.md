@@ -180,11 +180,52 @@ The project implements a comprehensive testing strategy following the test pyram
 
 **Playwright** provides browser automation for comprehensive E2E testing:
 
-- Tests complete user workflows from authentication to flashcard generation
 - Validates Chromium-based user journeys using the desktop Chrome profile
 - Stores traces, screenshots, and test reports in `reports/playwright`
 - Configure base URL via `PLAYWRIGHT_BASE_URL` (defaults to `http://localhost:4321`)
 - Uses parallel execution with isolated browser contexts
+
+#### Setting Up E2E Tests
+
+Before running E2E tests, you need to configure the test environment:
+
+1. **Create a test user in your database** (Supabase):
+   - Register a dedicated test user through the application UI or directly in Supabase
+   - Use a recognizable email like `e2e.test@yourdomain.com`
+   - Remember the credentials - you'll need them in the next step
+
+2. **Create `.env.test` file** in the project root:
+   ```bash
+   # Test user credentials
+   E2E_USERNAME=your-test-user@example.com
+   E2E_PASSWORD=your-test-password
+   
+   # Application URL for tests
+   PLAYWRIGHT_BASE_URL=http://localhost:4321
+   ```
+
+   **Important**: The `.env.test` file is gitignored and should never be committed to version control.
+
+3. **Run the tests**:
+   ```bash
+   npm run test:e2e
+   ```
+
+#### Current E2E Test Suite
+
+The project includes E2E tests implemented with the Page Object Model pattern:
+
+**Basic Tests** (`tests/e2e/basic.spec.ts`):
+1. **Homepage Navigation Test**: Verifies that the main page displays "Zaloguj się" (Login) and "Rejestracja" (Register) buttons for unauthenticated users
+2. **Login Form Test**: Navigates from homepage to login page and verifies the presence of email input, password input, and login button
+3. **Registration Form Test**: Navigates from homepage to registration page and verifies the presence of email input, name input, password input, confirm password input, and registration button
+
+**Authentication Tests** (`tests/e2e/auth.spec.ts`):
+1. **Login Flow Test**: Verifies that a user can log in with valid credentials and is redirected to the generate page
+2. **Authenticated State Test**: Confirms that a logged-in user sees the logout button and their email address
+3. **Logout Flow Test**: Verifies that a user can log out and is redirected to the homepage
+
+Tests use `data-test-id` attributes for reliable element selection and follow a maintainable Page Object Model architecture with helper utilities for authentication.
 
 For detailed testing scenarios and acceptance criteria, see `.ai/quality/test-plan.md`.
 

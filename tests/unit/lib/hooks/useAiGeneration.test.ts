@@ -3,7 +3,12 @@ import { renderHook, act } from "@testing-library/react";
 
 vi.mock("@/lib/api/aiGenerationsClient", () => {
   class MockApiError extends Error {
-    constructor(public statusCode: number, public code: string, message: string, public details?: unknown) {
+    constructor(
+      public statusCode: number,
+      public code: string,
+      message: string,
+      public details?: unknown
+    ) {
       super(message);
       this.name = "ApiError";
     }
@@ -20,7 +25,9 @@ vi.mock("@/lib/api/aiGenerationsClient", () => {
 import { useAiGeneration } from "@/lib/hooks/useAiGeneration";
 import { postCreateGeneration, getGenerationDetail } from "@/lib/api/aiGenerationsClient";
 
-const mockPostCreateGeneration = postCreateGeneration as unknown as ReturnType<typeof vi.fn<typeof postCreateGeneration>>;
+const mockPostCreateGeneration = postCreateGeneration as unknown as ReturnType<
+  typeof vi.fn<typeof postCreateGeneration>
+>;
 const mockGetGenerationDetail = getGenerationDetail as unknown as ReturnType<typeof vi.fn<typeof getGenerationDetail>>;
 
 const SOURCE_TEXT = "a".repeat(1500);

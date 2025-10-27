@@ -3,9 +3,9 @@ import { webcrypto } from "node:crypto";
 
 import { createGeneration, AiGenerationError } from "@/lib/services/aiGenerationsService";
 
-type SupabaseLike = {
+interface SupabaseLike {
   from: ReturnType<typeof vi.fn>;
-};
+}
 
 if (!globalThis.crypto) {
   globalThis.crypto = webcrypto as unknown as Crypto;
