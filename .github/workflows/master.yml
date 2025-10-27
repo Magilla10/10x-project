@@ -23,6 +23,9 @@ jobs:
       - name: Check Node and npm versions
         run: node --version && npm --version
 
+      - name: Przełącz na publiczne registry
+        run: npm config set registry https://registry.npmjs.org/
+
       - name: Install dependencies
         run: npm install --verbose  # Przełączono na install + verbose do debugowania; przywróć do 'npm ci' po naprawie
         timeout-minutes: 10  # Przerwij po 10 min jeśli zawiesza się
@@ -50,6 +53,9 @@ jobs:
 
       - name: Check Node and npm versions
         run: node --version && npm --version
+
+      - name: Przełącz na publiczne registry
+        run: npm config set registry https://registry.npmjs.org/
 
       - name: Install dependencies
         run: npm install --verbose  # Przełączono na install + verbose; przywróć do 'npm ci' po naprawie
