@@ -18,12 +18,16 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '22'  # Obniżono do LTS dla stabilności; przywróć do 24 jeśli potrzeba
           node-version-file: '.nvmrc'
-          cache: 'npm'
+          cache: false  # Wyłączone tymczasowo, jeśli zawiesza się dalej
+
+      - name: Check Node and npm versions
+        run: node --version && npm --version
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install --verbose  # Przełączono na install + verbose do debugowania; przywróć do 'npm ci' po naprawie
+        timeout-minutes: 10  # Przerwij po 10 min jeśli zawiesza się
 
       - name: Lint code
         run: npm run lint
@@ -44,12 +48,16 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '22'  # Spójne z zadaniem test
           node-version-file: '.nvmrc'
-          cache: 'npm'
+          cache: false  # Wyłączone tymczasowo
+
+      - name: Check Node and npm versions
+        run: node --version && npm --version
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install --verbose  # Przełączono na install + verbose; przywróć do 'npm ci' po naprawie
+        timeout-minutes: 10
 
       - name: Build for production
         run: npm run build
