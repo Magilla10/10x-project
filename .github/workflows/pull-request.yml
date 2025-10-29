@@ -1,0 +1,159 @@
+# The below workflow is structured according to the guidelines set in .cursor/rules/github-action.md
+# to ensure reliability and high-quality execution.
+name: Pull Request Validation
+
+on:
+  pull_request:
+    branches:
+      - master
+    types: [opened, synchronize, reopened]
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --loglevel=error
+        env:
+          NPM_CONFIG_LOGLEVEL: error
+          CI: true
+
+      - name: Run linter
+        run: npm run lint
+
+  unit-test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --loglevel=error
+        env:
+          NPM_CONFIG_LOGLEVEL: error
+          CI: true
+
+      - name: Run unit tests with coverage
+        run: npm run test:unit -- --coverage
+        env:
+          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+
+      - name: Upload unit test coverage
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: unit-test-coverage
+          path: coverage/unit/
+          retention-days: 7
+
+      - name: Upload unit test reports
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: unit-test-reports
+          path: reports/vitest/
+          retention-days: 7
+
+  e2e-test:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: lint
+    environment: integration
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --loglevel=error
+        env:
+          NPM_CONFIG_LOGLEVEL: error
+          CI: true
+
+      - name: Install Playwright browsers
+        run: npx playwright install chrome --with-deps
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        env:
+          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
+          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+
+      - name: Upload E2E test reports
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: e2e-test-reports
+          path: |
+            playwright-report/
+            reports/playwright/
+          retention-days: 7
+
+      - name: Upload E2E test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: e2e-test-failures
+          path: reports/playwright/artifacts/
+          retention-days: 7
+
+  status-comment:
+    name: PR Status Comment
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [lint, unit-test, e2e-test]
+    if: always() && (needs.lint.result == 'success' && needs.unit-test.result == 'success' && needs.e2e-test.result == 'success')
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Comment PR
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const message = `✅ **All checks passed successfully!**
+            
+            - ✅ Linting: Passed
+            - ✅ Unit Tests: Passed
+            - ✅ E2E Tests: Passed
+            
+            This PR is ready for review.`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
+
