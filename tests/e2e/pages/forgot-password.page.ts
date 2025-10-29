@@ -52,6 +52,6 @@ export class ForgotPasswordPage extends BasePage {
    * Pobiera komunikat błędu walidacji
    */
   getValidationError(): Locator {
-    return this.page.locator("text=Wprowadź poprawny adres e-mail.");
+    return this.page.locator("#forgot-email-error");
   }
 }

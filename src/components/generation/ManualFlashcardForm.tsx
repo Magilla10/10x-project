@@ -6,7 +6,7 @@ import { postCreateManualFlashcard, ApiError } from "@/lib/api/aiGenerationsClie
 import { validateFlashcardFront, validateFlashcardBack, countCodePoints } from "@/lib/utils/validation";
 
 interface ManualFlashcardFormProps {
-  remainingSlots: number;
+  remainingSlots?: number;
   onCreated?: () => void;
 }
 
@@ -25,7 +25,9 @@ export function ManualFlashcardForm({ remainingSlots, onCreated }: ManualFlashca
   const frontLength = countCodePoints(front);
   const backLength = countCodePoints(back);
 
-  const canSubmit = frontValidation.isValid && backValidation.isValid && !isSubmitting && remainingSlots > 0;
+  const limitReached = typeof remainingSlots === "number" && remainingSlots <= 0;
+
+  const canSubmit = frontValidation.isValid && backValidation.isValid && !isSubmitting && !limitReached;
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
@@ -78,7 +80,7 @@ export function ManualFlashcardForm({ remainingSlots, onCreated }: ManualFlashca
             onChange={(e) => setFront(e.target.value)}
             rows={2}
             placeholder="Co chcesz zapamiętać?"
-            disabled={isSubmitting || remainingSlots === 0}
+            disabled={isSubmitting || limitReached}
             className={cn(
               "w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white shadow-lg shadow-indigo-950/20 transition",
               "placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-300/80",
@@ -110,7 +112,7 @@ export function ManualFlashcardForm({ remainingSlots, onCreated }: ManualFlashca
             onChange={(e) => setBack(e.target.value)}
             rows={4}
             placeholder="Odpowiedź lub wyjaśnienie..."
-            disabled={isSubmitting || remainingSlots === 0}
+            disabled={isSubmitting || limitReached}
             className={cn(
               "w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white shadow-lg shadow-indigo-950/20 transition",
               "placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-300/80",
@@ -144,7 +146,7 @@ export function ManualFlashcardForm({ remainingSlots, onCreated }: ManualFlashca
           </div>
         )}
 
-        {remainingSlots === 0 && (
+        {limitReached && (
           <div className="rounded-xl border border-amber-300/60 bg-amber-400/15 p-3">
             <p className="text-sm text-amber-100">Osiągnięto limit 15 fiszek. Usuń niektóre, aby dodać nowe.</p>
           </div>

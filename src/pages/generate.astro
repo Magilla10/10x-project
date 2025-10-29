@@ -1,10 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import GenerateView from "../components/generation/GenerateView";
+import GenerateView, { ENABLE_AI_GENERATION } from "../components/generation/GenerateView";
 
 export const prerender = false;
 ---
 
-<Layout title="Generowanie fiszek AI">
+<Layout title={ENABLE_AI_GENERATION ? "Generowanie fiszek AI" : "Tworzenie fiszek"}>
   <GenerateView client:load />
 </Layout>
