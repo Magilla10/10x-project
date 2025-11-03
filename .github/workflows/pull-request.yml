@@ -22,12 +22,14 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit --loglevel=error
+        run: npm install --prefer-offline --no-audit --no-fund
         env:
           NPM_CONFIG_LOGLEVEL: error
           CI: true
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Run linter
         run: npm run lint
@@ -46,12 +48,14 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit --loglevel=error
+        run: npm install --prefer-offline --no-audit --no-fund
         env:
           NPM_CONFIG_LOGLEVEL: error
           CI: true
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Run unit tests with coverage
         run: npm run test:unit -- --coverage
@@ -92,12 +96,14 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit --loglevel=error
+        run: npm install --prefer-offline --no-audit --no-fund
         env:
           NPM_CONFIG_LOGLEVEL: error
           CI: true
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Install Playwright browsers
         run: npx playwright install chrome --with-deps
