@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { defineConfig, devices } from "@playwright/test";
 
+// Załaduj zmienne z .env.test
 dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
 
 export default defineConfig({
@@ -25,6 +26,14 @@ export default defineConfig({
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // W CI używamy env z GitHub Secrets, lokalnie Astro ładuje .env automatycznie
+    env: process.env.CI
+      ? {
+          PUBLIC_SUPABASE_URL: process.env.PUBLIC_SUPABASE_URL || "",
+          PUBLIC_SUPABASE_ANON_KEY: process.env.PUBLIC_SUPABASE_ANON_KEY || "",
+          OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || "",
+        }
+      : undefined,
   },
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000",
