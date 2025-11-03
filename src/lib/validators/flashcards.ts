@@ -5,11 +5,13 @@ const FRONT_MAX_LENGTH = 200;
 const BACK_MAX_LENGTH = 500;
 
 function sanitizeText(value: string): string {
-  return value
-    .trim()
-    // eslint-disable-next-line no-control-regex
-    .replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, "")
-    .replace(/[ \t]{2,}/g, " ");
+  return (
+    value
+      .trim()
+      // eslint-disable-next-line no-control-regex
+      .replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, "")
+      .replace(/[ \t]{2,}/g, " ")
+  );
 }
 
 function countCodePoints(value: string): number {
