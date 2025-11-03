@@ -24,8 +24,12 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'package-lock.json'
 
+      - name: Clear npm cache
+        run: npm cache clean --force
+        continue-on-error: true
+
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --prefer-offline --no-audit --no-fund || npm install --no-audit --no-fund
         env:
           NPM_CONFIG_LOGLEVEL: error
           CI: true
@@ -51,8 +55,12 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'package-lock.json'
 
+      - name: Clear npm cache
+        run: npm cache clean --force
+        continue-on-error: true
+
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --prefer-offline --no-audit --no-fund || npm install --no-audit --no-fund
         env:
           NPM_CONFIG_LOGLEVEL: error
           CI: true
@@ -100,8 +108,12 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'package-lock.json'
 
+      - name: Clear npm cache
+        run: npm cache clean --force
+        continue-on-error: true
+
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --prefer-offline --no-audit --no-fund || npm install --no-audit --no-fund
         env:
           NPM_CONFIG_LOGLEVEL: error
           CI: true
