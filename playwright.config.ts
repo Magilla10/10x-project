@@ -21,14 +21,14 @@ export default defineConfig({
       ]
     : "html",
   webServer: {
-    command: 'npm run dev:e2e',
-    url: 'http://localhost:3000',
+    command: "npm run dev:e2e",
+    url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
     env: {
-      PUBLIC_SUPABASE_URL: process.env.PUBLIC_SUPABASE_URL || '',
-      PUBLIC_SUPABASE_ANON_KEY: process.env.PUBLIC_SUPABASE_ANON_KEY || '',
-      OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || '',
+      PUBLIC_SUPABASE_URL: process.env.PUBLIC_SUPABASE_URL || "",
+      PUBLIC_SUPABASE_ANON_KEY: process.env.PUBLIC_SUPABASE_ANON_KEY || "",
+      OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || "",
     },
   },
   use: {
