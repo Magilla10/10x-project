@@ -21,11 +21,17 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
-          cache-dependency-path: 'package-lock.json'
+
+      - name: Clean npm cache
+        run: npm cache clean --force
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install --legacy-peer-deps
+          echo "=== Checking installation ==="
+          ls -la node_modules/.bin/eslint || echo "ERROR: eslint not found"
+          node_modules/.bin/eslint --version || echo "ERROR: eslint cannot run"
 
       - name: Run linter
         run: npm run lint
@@ -43,11 +49,14 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
-          cache-dependency-path: 'package-lock.json'
+
+      - name: Clean npm cache
+        run: npm cache clean --force
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install --legacy-peer-deps
 
       - name: Run unit tests with coverage
         run: npm run test:unit -- --coverage
@@ -87,11 +96,14 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
-          cache-dependency-path: 'package-lock.json'
+
+      - name: Clean npm cache
+        run: npm cache clean --force
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install --legacy-peer-deps
 
       - name: Install Playwright browsers
         run: npx playwright install chrome --with-deps
