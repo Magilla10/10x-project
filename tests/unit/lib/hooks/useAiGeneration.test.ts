@@ -42,7 +42,7 @@ async function seedProposals(result: ReturnType<typeof renderHook<typeof useAiGe
       createdAt: new Date().toISOString(),
       expiresAt: new Date(Date.now() + 5000).toISOString(),
     },
-  } as any);
+  } as unknown);
 
   mockGetGenerationDetail.mockResolvedValueOnce({
     status: "succeeded",
@@ -54,7 +54,7 @@ async function seedProposals(result: ReturnType<typeof renderHook<typeof useAiGe
         back: "Oryginalny tył",
       },
     ],
-  } as any);
+  } as unknown);
 
   await act(async () => {
     await result.current.startGeneration({

@@ -93,7 +93,7 @@ test.describe("Testy autentykacji", () => {
     await expect(forgotPasswordPage.getSubmitButton()).toBeVisible();
   });
 
-  test.skip("użytkownik może wysłać prośbę o reset hasła", async ({ page }) => {
+  test.skip("użytkownik może wysłać prośbę o reset hasła", async () => {
     const { username } = getTestCredentials();
 
     // Przejdź do strony forgot-password
@@ -106,7 +106,7 @@ test.describe("Testy autentykacji", () => {
     await expect(forgotPasswordPage.getSuccessMessage()).toBeVisible();
   });
 
-  test("formularz forgot-password waliduje email", async ({ page }) => {
+  test("formularz forgot-password waliduje email", async () => {
     // Przejdź do strony forgot-password
     await forgotPasswordPage.goto();
 

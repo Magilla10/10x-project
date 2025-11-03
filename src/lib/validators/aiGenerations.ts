@@ -33,6 +33,7 @@ function sanitizeSourceText(text: string): string {
     text
       .trim()
       // Remove control characters but keep newlines, tabs, and carriage returns
+      // eslint-disable-next-line no-control-regex
       .replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, "")
       // Normalize multiple spaces to single space
       .replace(/[^\S\r\n]+/g, " ")

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
 import { webcrypto } from "node:crypto";
 
-import { createGeneration, AiGenerationError } from "@/lib/services/aiGenerationsService";
+import { createGeneration } from "@/lib/services/aiGenerationsService";
 
 interface SupabaseLike {
   from: ReturnType<typeof vi.fn>;
@@ -32,14 +32,14 @@ describe("aiGenerationsService.createGeneration", () => {
     const supabase: SupabaseLike = {
       from: vi.fn().mockImplementation((table: string) => {
         if (table === "ai_generation_logs") {
-          return pendingQuery as any;
+          return pendingQuery as unknown;
         }
         if (table === "flashcards") {
           return {
             select: vi.fn().mockReturnValue({
               eq: vi.fn().mockResolvedValue({ count: 0, error: null }),
             }),
-          } as any;
+          } as unknown;
         }
         throw new Error("unexpected table");
       }),
@@ -51,7 +51,7 @@ describe("aiGenerationsService.createGeneration", () => {
           sourceText: "a".repeat(1500),
           maxFlashcards: 5,
         },
-        { supabase: supabase as unknown as any, userId: "user-1" }
+        { supabase: supabase as unknown, userId: "user-1" }
       )
     ).rejects.toMatchObject({ code: "GENERATION_PENDING", statusCode: 409 });
 
@@ -114,17 +114,17 @@ describe("aiGenerationsService.createGeneration", () => {
       from: vi.fn((table: string) => {
         if (table === "ai_generation_logs") {
           const index = callIndex++;
-          if (index === 0) return pendingQuery as any;
-          if (index === 1) return insertQuery as any;
-          if (index === 2) return updateQuery as any;
+          if (index === 0) return pendingQuery as unknown;
+          if (index === 1) return insertQuery as unknown;
+          if (index === 2) return updateQuery as unknown;
         }
 
         if (table === "flashcards") {
-          return flashcardsQuery as any;
+          return flashcardsQuery as unknown;
         }
 
         if (table === "ai_generation_error_logs") {
-          return { insert: logInsert } as any;
+          return { insert: logInsert } as unknown;
         }
 
         throw new Error(`Unexpected table ${table}`);
@@ -137,7 +137,7 @@ describe("aiGenerationsService.createGeneration", () => {
           sourceText: "a".repeat(1500),
           maxFlashcards: 10,
         },
-        { supabase: supabase as unknown as any, userId: "user-1" }
+        { supabase: supabase as unknown, userId: "user-1" }
       )
     ).rejects.toMatchObject({ code: "QUEUE_ENQUEUE_FAILED", statusCode: 500 });
 
