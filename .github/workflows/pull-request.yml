@@ -30,6 +30,7 @@ jobs:
           NPM_CONFIG_LOGLEVEL: error
           CI: true
           NODE_OPTIONS: --max-old-space-size=4096
+          npm_config_cache: ${{ runner.temp }}/npm-cache
 
       - name: Run linter
         run: npm run lint
@@ -56,6 +57,7 @@ jobs:
           NPM_CONFIG_LOGLEVEL: error
           CI: true
           NODE_OPTIONS: --max-old-space-size=4096
+          npm_config_cache: ${{ runner.temp }}/npm-cache
 
       - name: Run unit tests with coverage
         run: npm run test:unit -- --coverage
@@ -104,6 +106,7 @@ jobs:
           NPM_CONFIG_LOGLEVEL: error
           CI: true
           NODE_OPTIONS: --max-old-space-size=4096
+          npm_config_cache: ${{ runner.temp }}/npm-cache
 
       - name: Install Playwright browsers
         run: npx playwright install chrome --with-deps

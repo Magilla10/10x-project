@@ -35,6 +35,7 @@ jobs:
           NPM_CONFIG_LOGLEVEL: error
           CI: true
           NODE_OPTIONS: --max-old-space-size=4096
+          npm_config_cache: ${{ runner.temp }}/npm-cache
 
       - name: Lint code
         run: npm run lint
@@ -90,6 +91,7 @@ jobs:
           NPM_CONFIG_LOGLEVEL: error
           CI: true
           NODE_OPTIONS: --max-old-space-size=4096
+          npm_config_cache: ${{ runner.temp }}/npm-cache
 
       - name: Build for production
         run: npm run build
