@@ -25,11 +25,6 @@ export default defineConfig({
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
-    env: {
-      PUBLIC_SUPABASE_URL: process.env.PUBLIC_SUPABASE_URL || "",
-      PUBLIC_SUPABASE_ANON_KEY: process.env.PUBLIC_SUPABASE_ANON_KEY || "",
-      OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || "",
-    },
   },
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000",
