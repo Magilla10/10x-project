@@ -63,9 +63,21 @@ const facts = [
   class="relative mx-auto w-full min-h-screen overflow-hidden bg-gradient-to-br from-[#120024] via-[#080f2c] to-[#001f34] px-4 pb-28 pt-4 sm:px-8 sm:pb-36 sm:pt-8"
 >
   <div class="pointer-events-none absolute inset-0 -z-10">
-    <div class="absolute left-1/2 top-[-18%] h-72 w-72 -translate-x-1/2 rounded-full bg-primary/30 blur-3xl" aria-hidden="true" />
-    <div class="absolute bottom-[-20%] right-[8%] h-80 w-80 rounded-full bg-cyan-400/25 blur-[120px]" aria-hidden="true" />
-    <div class="absolute bottom-[12%] left-[10%] h-64 w-64 rounded-full bg-fuchsia-500/20 blur-[140px]" aria-hidden="true" />
+    <div
+      class="absolute left-1/2 top-[-18%] h-72 w-72 -translate-x-1/2 rounded-full bg-primary/30 blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+    <div
+      class="absolute bottom-[-20%] right-[8%] h-80 w-80 rounded-full bg-cyan-400/25 blur-[120px]"
+      aria-hidden="true"
+    >
+    </div>
+    <div
+      class="absolute bottom-[12%] left-[10%] h-64 w-64 rounded-full bg-fuchsia-500/20 blur-[140px]"
+      aria-hidden="true"
+    >
+    </div>
   </div>
 
   <div
@@ -87,7 +99,11 @@ const facts = [
       <!-- Layout for image and buttons -->
       <div class="mb-8 flex flex-col items-center justify-center gap-10 lg:flex-row">
         <div class="flex-none">
-          <img src="/new_image.png" alt="Odręczne fiszki w futurystycznym stylu" class="w-full max-w-xs rounded-3xl border border-white/10 shadow-[0_20px_50px_-25px_rgba(59,130,246,0.65)]" />
+          <img
+            src="/new_image.png"
+            alt="Odręczne fiszki w futurystycznym stylu"
+            class="w-full max-w-xs rounded-3xl border border-white/10 shadow-[0_20px_50px_-25px_rgba(59,130,246,0.65)]"
+          />
         </div>
         <div class="flex w-full max-w-xl flex-col items-center gap-6 text-center">
           {
@@ -132,24 +148,30 @@ const facts = [
 
   <section class="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#050b18]/75 py-3 backdrop-blur-md">
     <div class="relative mx-auto flex w-full max-w-6xl items-center gap-16 overflow-hidden px-4 sm:px-6">
-      <div class="welcome-marquee-track flex min-w-full shrink-0 items-center gap-10 whitespace-nowrap text-xs uppercase tracking-[0.4em] text-white/70">
-        {facts.map((fact) => (
-          <span class="flex items-center gap-3" aria-label="Ciekawostka">
-            <span class="text-fuchsia-200">✶</span>
-            {fact}
-          </span>
-        ))}
+      <div
+        class="welcome-marquee-track flex min-w-full shrink-0 items-center gap-10 whitespace-nowrap text-xs uppercase tracking-[0.4em] text-white/70"
+      >
+        {
+          facts.map((fact) => (
+            <span class="flex items-center gap-3" aria-label="Ciekawostka">
+              <span class="text-fuchsia-200">✶</span>
+              {fact}
+            </span>
+          ))
+        }
       </div>
       <div
         class="welcome-marquee-track flex min-w-full shrink-0 items-center gap-10 whitespace-nowrap text-xs uppercase tracking-[0.4em] text-white/70"
         aria-hidden="true"
       >
-        {facts.map((fact) => (
-          <span class="flex items-center gap-3">
-            <span class="text-fuchsia-200">✶</span>
-            {fact}
-          </span>
-        ))}
+        {
+          facts.map((fact) => (
+            <span class="flex items-center gap-3">
+              <span class="text-fuchsia-200">✶</span>
+              {fact}
+            </span>
+          ))
+        }
       </div>
     </div>
   </section>

@@ -83,7 +83,12 @@ function AiDrivenGenerationView() {
     >
       <ManualFlashcardForm remainingSlots={selection.remainingSlots} onCreated={reset} />
       <StepsGrid />
-      <SourceTextForm value={formState} onChange={handleFormChange} onSubmit={handleSubmit} isSubmitting={isFormDisabled} />
+      <SourceTextForm
+        value={formState}
+        onChange={handleFormChange}
+        onSubmit={handleSubmit}
+        isSubmitting={isFormDisabled}
+      />
 
       {(status === "pending" || status === "submitting" || error) && (
         <GenerationStatusPanel status={status} progress={progress} error={error} onRetry={reset} />
@@ -122,7 +127,10 @@ function PageShell({ badgeLabel, title, description, children }: PageShellProps)
       <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 pb-20 pt-16 md:px-8 lg:gap-16">
         <header className="space-y-8 text-center text-white md:text-left">
           <div className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-fuchsia-100/90 shadow-[0_0_40px_rgba(236,72,153,0.25)] md:justify-start">
-            <span className="size-2 rounded-full bg-[#ff3ecf] shadow-[0_0_0_6px_rgba(255,62,207,0.25)]" aria-hidden="true" />
+            <span
+              className="size-2 rounded-full bg-[#ff3ecf] shadow-[0_0_0_6px_rgba(255,62,207,0.25)]"
+              aria-hidden="true"
+            />
             {badgeLabel}
           </div>
 
@@ -153,7 +161,9 @@ function StepsGrid() {
     <div className="grid gap-4 text-left text-xs text-white/70 sm:grid-cols-3 sm:text-sm">
       <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 via-purple-400/10 to-transparent p-4 shadow-lg shadow-indigo-950/20 backdrop-blur">
         <p className="font-semibold text-white">1. Wklej materiał</p>
-        <p className="mt-1 text-white/70">Minimum 1000 znaków, maksymalnie 10 000 – im więcej kontekstu, tym lepsze fiszki.</p>
+        <p className="mt-1 text-white/70">
+          Minimum 1000 znaków, maksymalnie 10 000 – im więcej kontekstu, tym lepsze fiszki.
+        </p>
       </div>
       <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 via-fuchsia-400/10 to-transparent p-4 shadow-lg shadow-indigo-950/20 backdrop-blur">
         <p className="font-semibold text-white">2. Oceń propozycje</p>
@@ -174,28 +184,44 @@ function TipsAside() {
         Wskazówki dla lepszych fiszek
       </h2>
       <p className="text-white/70">
-        Krótkie, konkretne zdania i własne przykłady zwiększają skuteczność nauki. Skup się na informacjach, które chcesz regularnie powtarzać.
+        Krótkie, konkretne zdania i własne przykłady zwiększają skuteczność nauki. Skup się na informacjach, które
+        chcesz regularnie powtarzać.
       </p>
       <ul className="space-y-4">
         <li className="flex items-start gap-3">
-          <span className="mt-1 size-2 rounded-full bg-[#ff3ecf] shadow-[0_0_0_6px_rgba(255,62,207,0.25)]" aria-hidden="true" />
+          <span
+            className="mt-1 size-2 rounded-full bg-[#ff3ecf] shadow-[0_0_0_6px_rgba(255,62,207,0.25)]"
+            aria-hidden="true"
+          />
           <div className="space-y-1">
             <p className="font-medium text-white">Formułuj pytania</p>
-            <p className="text-white/70">Front fiszki pisz w formie pytania – aktywne odtwarzanie wiedzy wzmacnia pamięć.</p>
+            <p className="text-white/70">
+              Front fiszki pisz w formie pytania – aktywne odtwarzanie wiedzy wzmacnia pamięć.
+            </p>
           </div>
         </li>
         <li className="flex items-start gap-3">
-          <span className="mt-1 size-2 rounded-full bg-[#27e0ff] shadow-[0_0_0_6px_rgba(39,224,255,0.25)]" aria-hidden="true" />
+          <span
+            className="mt-1 size-2 rounded-full bg-[#27e0ff] shadow-[0_0_0_6px_rgba(39,224,255,0.25)]"
+            aria-hidden="true"
+          />
           <div className="space-y-1">
             <p className="font-medium text-white">Dodawaj kontekst</p>
-            <p className="text-white/70">Na odwrocie zapisuj krótkie przykłady lub skojarzenia, które ułatwią przypomnienie treści.</p>
+            <p className="text-white/70">
+              Na odwrocie zapisuj krótkie przykłady lub skojarzenia, które ułatwią przypomnienie treści.
+            </p>
           </div>
         </li>
         <li className="flex items-start gap-3">
-          <span className="mt-1 size-2 rounded-full bg-[#9dff6b] shadow-[0_0_0_6px_rgba(157,255,107,0.25)]" aria-hidden="true" />
+          <span
+            className="mt-1 size-2 rounded-full bg-[#9dff6b] shadow-[0_0_0_6px_rgba(157,255,107,0.25)]"
+            aria-hidden="true"
+          />
           <div className="space-y-1">
             <p className="font-medium text-white">Powtarzaj regularnie</p>
-            <p className="text-white/70">Małe porcje materiału przyswajane systematycznie są skuteczniejsze niż długa jednorazowa sesja.</p>
+            <p className="text-white/70">
+              Małe porcje materiału przyswajane systematycznie są skuteczniejsze niż długa jednorazowa sesja.
+            </p>
           </div>
         </li>
       </ul>

@@ -39,17 +39,17 @@ export class LoginPage extends BasePage {
   async login(email: string, password: string): Promise<void> {
     const emailInput = this.getEmailInput();
     const passwordInput = this.getPasswordInput();
-    
+
     // Wypełnij email i poczekaj na załadowanie
     await emailInput.click();
     await emailInput.fill(email);
     await this.page.waitForTimeout(100);
-    
+
     // Wypełnij hasło i poczekaj na załadowanie
     await passwordInput.click();
     await passwordInput.fill(password);
     await this.page.waitForTimeout(100);
-    
+
     // Kliknij przycisk logowania
     await this.getSubmitButton().click();
   }
