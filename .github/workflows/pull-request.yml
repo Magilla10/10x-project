@@ -1,6 +1,6 @@
 # The below workflow is structured according to the guidelines set in .cursor/rules/github-action.md
 # to ensure reliability and high-quality execution.
-name: Pull Request Validation
+name: Pull Request Checks
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   lint:
-    name: Lint Code
+    name: Lint code
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -22,6 +22,11 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
+      - name: Verify npm and node versions
+        run: |
+          node --version
+          npm --version
+
       - name: Clean npm cache
         run: npm cache clean --force
 
@@ -29,15 +34,12 @@ jobs:
         run: |
           rm -rf node_modules package-lock.json
           npm install --legacy-peer-deps
-          echo "=== Checking installation ==="
-          ls -la node_modules/.bin/eslint || echo "ERROR: eslint not found"
-          node_modules/.bin/eslint --version || echo "ERROR: eslint cannot run"
 
-      - name: Run linter
+      - name: Lint code
         run: npm run lint
 
   unit-test:
-    name: Unit Tests
+    name: Run unit tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: lint
@@ -49,6 +51,11 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
+
+      - name: Verify npm and node versions
+        run: |
+          node --version
+          npm --version
 
       - name: Clean npm cache
         run: npm cache clean --force
@@ -72,20 +79,12 @@ jobs:
         with:
           name: unit-test-coverage
           path: coverage/unit/
-          retention-days: 7
-
-      - name: Upload unit test reports
-        if: always()
-        uses: actions/upload-artifact@v5
-        with:
-          name: unit-test-reports
-          path: reports/vitest/
-          retention-days: 7
+          retention-days: 30
 
   e2e-test:
-    name: E2E Tests
+    name: Run E2E tests
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     needs: lint
     environment: integration
     steps:
@@ -96,6 +95,11 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
+
+      - name: Verify npm and node versions
+        run: |
+          node --version
+          npm --version
 
       - name: Clean npm cache
         run: npm cache clean --force
@@ -108,12 +112,11 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install chrome --with-deps
 
-      - name: Run E2E tests
+      - name: Run end-to-end tests
         run: npm run test:e2e
         env:
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
           E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
 
@@ -124,42 +127,60 @@ jobs:
           name: e2e-test-reports
           path: |
             playwright-report/
-            reports/playwright/
-          retention-days: 7
-
-      - name: Upload E2E test artifacts
-        if: failure()
-        uses: actions/upload-artifact@v5
-        with:
-          name: e2e-test-failures
-          path: reports/playwright/artifacts/
-          retention-days: 7
+            reports/
+          retention-days: 30
 
   status-comment:
-    name: PR Status Comment
+    name: Post status comment
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [lint, unit-test, e2e-test]
-    if: always() && (needs.lint.result == 'success' && needs.unit-test.result == 'success' && needs.e2e-test.result == 'success')
+    if: always()
     permissions:
       pull-requests: write
     steps:
+      - name: Check job statuses
+        id: check-status
+        run: |
+          if [ "${{ needs.lint.result }}" == "success" ] && \
+             [ "${{ needs.unit-test.result }}" == "success" ] && \
+             [ "${{ needs.e2e-test.result }}" == "success" ]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "message=✅ All checks passed successfully!" >> $GITHUB_OUTPUT
+          else
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "message=❌ Some checks failed. Please review the results above." >> $GITHUB_OUTPUT
+          fi
+
       - name: Comment PR
         uses: actions/github-script@v8
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const message = `✅ **All checks passed successfully!**
-            
-            - ✅ Linting: Passed
-            - ✅ Unit Tests: Passed
-            - ✅ E2E Tests: Passed
-            
-            This PR is ready for review.`;
-            
+            const statusIcon = '${{ steps.check-status.outputs.status }}' === 'success' ? '✅' : '❌';
+            const lintIcon = '${{ needs.lint.result }}' === 'success' ? '✅' : '❌';
+            const unitIcon = '${{ needs.unit-test.result }}' === 'success' ? '✅' : '❌';
+            const e2eIcon = '${{ needs.e2e-test.result }}' === 'success' ? '✅' : '❌';
+
+            const body = `## ${statusIcon} Pull Request Status
+
+            ### Job Results:
+            | Job | Status | Result |
+            |-----|--------|--------|
+            | Lint | ${lintIcon} | \`${{ needs.lint.result }}\` |
+            | Unit Tests | ${unitIcon} | \`${{ needs.unit-test.result }}\` |
+            | E2E Tests | ${e2eIcon} | \`${{ needs.e2e-test.result }}\` |
+
+            ---
+            ${{ steps.check-status.outputs.message }}
+
+            [View full workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            `;
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: message
+              body: body
             });
 
