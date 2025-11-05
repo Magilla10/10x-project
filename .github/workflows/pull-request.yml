@@ -115,6 +115,7 @@ jobs:
       - name: Run end-to-end tests
         run: npm run test:e2e
         env:
+          CI: true
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
           E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
