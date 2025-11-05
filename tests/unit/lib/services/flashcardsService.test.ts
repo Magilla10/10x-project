@@ -10,7 +10,7 @@ import {
 const USER_ID = "user-1";
 
 const createContext = (supabase: Record<string, unknown>) => ({
-  supabase: supabase as any,
+  supabase: supabase as unknown,
   userId: USER_ID,
 });
 

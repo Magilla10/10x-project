@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Loader2, LogIn, LogOut, User2 } from "lucide-react";
+import { Loader2, LogOut, User2 } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";

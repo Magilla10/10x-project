@@ -141,7 +141,10 @@ export function ManualFlashcardForm({ remainingSlots, onCreated }: ManualFlashca
         )}
 
         {success && (
-          <div className="rounded-xl border border-emerald-300/60 bg-emerald-400/15 p-3" data-test-id="flashcard-created-message">
+          <div
+            className="rounded-xl border border-emerald-300/60 bg-emerald-400/15 p-3"
+            data-test-id="flashcard-created-message"
+          >
             <p className="text-sm text-emerald-100">Fiszka została utworzona!</p>
           </div>
         )}
@@ -154,7 +157,12 @@ export function ManualFlashcardForm({ remainingSlots, onCreated }: ManualFlashca
 
         {/* Navigation & Submit */}
         <div className="flex justify-end pt-2">
-          <Button onClick={handleSubmit} disabled={!canSubmit} className="shadow-lg shadow-indigo-500/30" data-test-id="add-flashcard-button">
+          <Button
+            onClick={handleSubmit}
+            disabled={!canSubmit}
+            className="shadow-lg shadow-indigo-500/30"
+            data-test-id="add-flashcard-button"
+          >
             {isSubmitting ? "Dodawanie..." : "Dodaj fiszkę"}
           </Button>
         </div>

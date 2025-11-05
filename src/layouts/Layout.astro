@@ -23,7 +23,10 @@ const { title = "Świat fiszek", hideAuthButtons = false } = Astro.props as Prop
     <div class="flex min-h-screen flex-col">
       <header class="border-b border-white/10 bg-white/10 backdrop-blur-xl">
         <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
-          <a href="/" class="bg-gradient-to-r from-purple-200 via-white to-cyan-200 bg-clip-text text-lg font-semibold tracking-tight text-transparent">
+          <a
+            href="/"
+            class="bg-gradient-to-r from-purple-200 via-white to-cyan-200 bg-clip-text text-lg font-semibold tracking-tight text-transparent"
+          >
             10xDevs
           </a>
           {!hideAuthButtons && <AuthStatus client:load />}

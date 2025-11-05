@@ -67,5 +67,4 @@ An MVP web application for automatically generating high-quality educational fla
 Contributions are welcome! Please submit pull requests for bug fixes, features, or improvements.
 
 ## License
-
-[MIT License](LICENSE)
+...

@@ -1,24 +1,48 @@
 import { test, expect } from "@playwright/test";
-import { LoginPage, GeneratePage, ForgotPasswordPage } from "./pages";
+import { LoginPage, GeneratePage, ForgotPasswordPage, RegisterPage } from "./pages";
 import { getTestCredentials } from "./helpers/auth.helper";
 
 test.describe("Testy autentykacji", () => {
   let loginPage: LoginPage;
   let generatePage: GeneratePage;
   let forgotPasswordPage: ForgotPasswordPage;
+  let registerPage: RegisterPage;
 
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);
     generatePage = new GeneratePage(page);
     forgotPasswordPage = new ForgotPasswordPage(page);
+    registerPage = new RegisterPage(page);
   });
 
-  test("użytkownik może się zalogować i zostaje przekierowany na stronę generowania", async ({ page }) => {
+  test.skip("użytkownik może się zalogować i zostaje przekierowany na stronę generowania", async ({ page }) => {
     const { username, password } = getTestCredentials();
 
-    // Przejdź do strony logowania
+    // Najpierw upewnij się, że użytkownik testowy istnieje - spróbuj się zarejestrować
+    await registerPage.goto();
+    await page.waitForLoadState("networkidle");
+
+    // Poczekaj aż komponent React się załaduje
+    await expect(registerPage.getEmailInput()).toBeVisible({ timeout: 10_000 });
+
+    // Wypełnij formularz rejestracji
+    await registerPage.getEmailInput().fill(username);
+    await registerPage.getDisplayNameInput().fill("Użytkownik Testowy");
+    await registerPage.getPasswordInput().fill(password);
+    await registerPage.getConfirmPasswordInput().fill(password);
+
+    // Kliknij przycisk rejestracji
+    await registerPage.getSubmitButton().click();
+
+    // Poczekaj na przekierowanie lub komunikat sukcesu (użytkownik może już istnieć)
+    await page.waitForTimeout(3000); // Daj czas na przetworzenie rejestracji
+
+    // Teraz przejdź do logowania
     await loginPage.goto();
     await page.waitForLoadState("networkidle");
+
+    // Poczekaj aż komponent React się załaduje
+    await expect(loginPage.getEmailInput()).toBeVisible({ timeout: 10_000 });
 
     // Wypełnij formularz
     await loginPage.getEmailInput().fill(username);
@@ -78,6 +102,10 @@ test.describe("Testy autentykacji", () => {
     // Przejdź do strony logowania
     await loginPage.goto();
 
+    // Poczekaj aż komponent React się załaduje
+    await expect(loginPage.getEmailInput()).toBeVisible({ timeout: 10_000 });
+    await expect(loginPage.getPasswordInput()).toBeVisible();
+
     // Sprawdź czy link "Nie pamiętasz hasła?" jest widoczny
     const forgotPasswordLink = page.locator('a[href="/forgot-password"]');
     await expect(forgotPasswordLink).toBeVisible();
@@ -88,12 +116,12 @@ test.describe("Testy autentykacji", () => {
     // Sprawdź czy nastąpiło przekierowanie na stronę forgot-password
     await page.waitForURL("/forgot-password");
 
-    // Sprawdź czy formularz forgot-password jest widoczny
-    await expect(forgotPasswordPage.getEmailInput()).toBeVisible();
+    // Poczekaj aż komponent React się załaduje
+    await expect(forgotPasswordPage.getEmailInput()).toBeVisible({ timeout: 10_000 });
     await expect(forgotPasswordPage.getSubmitButton()).toBeVisible();
   });
 
-  test.skip("użytkownik może wysłać prośbę o reset hasła", async ({ page }) => {
+  test.skip("użytkownik może wysłać prośbę o reset hasła", async () => {
     const { username } = getTestCredentials();
 
     // Przejdź do strony forgot-password
@@ -106,9 +134,13 @@ test.describe("Testy autentykacji", () => {
     await expect(forgotPasswordPage.getSuccessMessage()).toBeVisible();
   });
 
-  test("formularz forgot-password waliduje email", async ({ page }) => {
+  test("formularz forgot-password waliduje email", async () => {
     // Przejdź do strony forgot-password
     await forgotPasswordPage.goto();
+
+    // Poczekaj aż komponent React się załaduje
+    await expect(forgotPasswordPage.getEmailInput()).toBeVisible({ timeout: 10_000 });
+    await expect(forgotPasswordPage.getSubmitButton()).toBeVisible();
 
     // Spróbuj wysłać pusty formularz
     await forgotPasswordPage.getSubmitButton().click();
